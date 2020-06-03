@@ -10,14 +10,19 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscodedev.helloWorld"
+		"onCommand:vscodedev.activate",
+		"onCommand:vscodedev.showWebview"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscodedev.helloWorld",
-				"title": "Hello World"
+				"command": "vscodedev.activate",
+				"title": "VSCodeDev: Activate"
+			},
+			{
+				"command": "vscodedev.showWebview",
+				"title": "VSCodeDev: Show Webview"
 			}
 		]
 	},
