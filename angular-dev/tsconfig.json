@@ -18,6 +18,9 @@
     "paths": {
       "dom-event": [
         "dist/dom-event"
+      ],
+      "vscode-util": [
+        "dist/vscode-util"
       ]
     }
   },

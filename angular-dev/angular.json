@@ -159,6 +159,46 @@
           }
         }
       }
+    },
+    "VscodeUtil": {
+      "projectType": "library",
+      "root": "projects/vscode-util",
+      "sourceRoot": "projects/vscode-util/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/vscode-util/tsconfig.lib.json",
+            "project": "projects/vscode-util/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/vscode-util/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/vscode-util/src/test.ts",
+            "tsConfig": "projects/vscode-util/tsconfig.spec.json",
+            "karmaConfig": "projects/vscode-util/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/vscode-util/tsconfig.lib.json",
+              "projects/vscode-util/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }},
   "defaultProject": "angular-dev"
 }
