@@ -17,7 +17,6 @@
     ],
     "paths": {
       "dom-event": [
-        "dist/dom-event/dom-event",
         "dist/dom-event"
       ]
     }
