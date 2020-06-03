@@ -7,8 +7,8 @@ import { map } from 'rxjs/operators';
 // https://stackoverflow.com/questions/1664785/resize-html5-canvas-to-fit-window
 
 export interface Size {
-  width: number;
-  height: number;
+  w: number;
+  h: number;
 };
 
 @Injectable()
@@ -24,9 +24,15 @@ export class ResizeService {
     return this.eventSubject;
   }
 
-  get size(): Observable<Size> {
+  get inner(): Observable<Size> {
     return this.eventSubject.pipe( map( () => {
-      return { 'width': window.innerWidth, 'height': window.innerHeight };
+      return { 'w': window.innerWidth, 'h': window.innerHeight };
+    } ) )
+  }
+
+  get outer(): Observable<Size> {
+    return this.eventSubject.pipe( map( () => {
+      return { 'w': window.outerWidth, 'h': window.outerHeight };
     } ) )
   }
 }
