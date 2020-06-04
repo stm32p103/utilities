@@ -40,7 +40,7 @@ export class PasteService {
     } ) );
   }
 
-  getImage() {
+  get image() {
     // MIME TypeがImageから始まっていたら画像として扱う
     // https://developer.mozilla.org/ja/docs/Web/HTTP/Basics_of_HTTP/MIME_types
     return this.getFile().pipe( 
