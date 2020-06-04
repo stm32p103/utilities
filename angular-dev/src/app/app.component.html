@@ -5,6 +5,9 @@
 </ul>
 <h1>Upload</h1>
 <input (input)="select($event)" multiple="true" type="file">
+<h1>Image</h1>
+<input (input)="selectImage($event)" multiple="true" type="file" accept="image/png">
+<img #preview width="100%" src="{{image}}">
 <p>{{fileContent}}</p>
 <h1>Paste Array</h1>
 <table>
