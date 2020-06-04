@@ -1,9 +1,8 @@
 import { Observable, fromEvent } from 'rxjs';
 
-export class FileReaderObservable {
-  public readonly reader = new FileReader();
+export class ObservableFileReader extends FileReader {
   private getEvent<T>( name: string ): Observable<T> {
-    return fromEvent<T>( this.reader, name );
+    return fromEvent<T>( this, name );
   }
 
   get onAbort() { return this.getEvent<ProgressEvent>( 'abort' ) }
