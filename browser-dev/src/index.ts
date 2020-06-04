@@ -1,1 +1,2 @@
-export * from './table2array';
+export * from './dom';
+export * from './upload';

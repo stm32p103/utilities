@@ -1,23 +1,19 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "target": "es5",
+    "module": "commonjs",
     "outDir": "./dist",
     "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
+    "declaration": true,
+    "strict": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
     "lib": [
       "es2018",
       "dom"
     ]
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
   }
 }

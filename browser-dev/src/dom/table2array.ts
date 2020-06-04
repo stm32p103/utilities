@@ -1,6 +1,7 @@
+
 export function table2array( table: HTMLTableElement ) {
     let rowSkips: number[] = [];        // 1つ上の行基準のrowSpanの高さ。> 0 ならスキップが必要。
-    const tableData: string[][] = [];
+    const tableData: (string | null)[][] = [];
 
     for( let i = 0; i < table.rows.length; i++ ) {
         const rowElement = table.rows[ i ];
@@ -17,7 +18,7 @@ export function table2array( table: HTMLTableElement ) {
         const dataCount = rowCellCount + rowSkips.reduce( (prev, cur) => ( cur > 0 ) ? prev + 1 : prev, 0 );
 
         // 行のデータを空配列
-        const rowData: string[] = new Array( dataCount ).fill( null );
+        const rowData: (string | null)[] = new Array( dataCount ).fill( null );
 
         // skip数の配列拡張
         const shortage = dataCount - rowSkips.length;
@@ -45,7 +46,7 @@ export function table2array( table: HTMLTableElement ) {
             column++;
 
             // j 番目のセルの colspan をスキップ
-            for( let skip=0; skip < columnSkip; skip++ ) {
+            for( let skip = 0; skip < columnSkip; skip++ ) {
                 rowSkips[ column ] = rowSkip;
                 rowData[ column ] = null;
                 column++;
@@ -64,7 +65,7 @@ export function table2array( table: HTMLTableElement ) {
     return tableData;
 }
 
-function countColumns( row: HTMLTableRowElement) {
+function countColumns( row: HTMLTableRowElement ) {
     let sum = 0;
     for( let i=0; i<row.cells.length; i++ ) {
         sum += row.cells[i].colSpan;
