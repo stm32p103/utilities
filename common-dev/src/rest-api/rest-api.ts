@@ -1,28 +1,66 @@
-import { Connection, RequestOption } from './connection';
+import { query2string } from './query';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+
+type KeyValue<T> = { [key: string]: T };
+
+export interface RequestOption {
+  headers?: KeyValue<string>;
+  query?: KeyValue<any>;
+}
+
+export interface RestApiAuth {
+  username: string;
+  password: string;
+}
+
+export interface RestApiResponse {
+  data: any;
+  status: number;
+  cookies: string[];
+}
 
 export class RestAPI {
-  private readonly baseUrl: string;
-  constructor( private readonly connection: Connection, base: URL ) {
-    this.baseUrl = base.toString().replace( /\/$/, ''); // 末尾の / を削除
+  private readonly axios: AxiosInstance;
+  constructor( base: URL ) {
+    this.axios = axios.create( {
+      baseURL: base.toString()
+    } );
   }
 
-  private url( path: string ) {
-    let url = this.baseUrl + path;
-    // if( queries ) {
-    //   url += '?' + queries.map( q => q.toString() ).join( '&' );
-    // }
-    return url;
+  configureAuth( auth: RestApiAuth ) {
+    this.axios.defaults.auth = { ...auth };
   }
 
-  protected async get( path: string, option?: RequestOption ) {
-    return await this.connection.get( this.url( path ), option?.headers );
+  private mergePath( path: string, query: { [ key: string ]: any } ) {
+    return path + query2string( query );
   }
 
-  protected async delete( path: string, option?: RequestOption ) {
-    return await this.connection.get( this.url( path ), option?.headers );
+  private fromResponse( res: AxiosResponse ): RestApiResponse {
+    const cookies = res.headers['set-cookie'] as string[];
+    return {
+      data: res.data,
+      status: res.status,
+      cookies: cookies
+    };
   }
 
-  protected async post( path: string, data: any, option?: RequestOption ) {
-    return await this.connection.post( this.url( path ), data, option?.headers );
+  async get( path: string, option?: RequestOption ) {
+    const res = await this.axios.get( this.mergePath( path, option?.query || {} ), { headers: option?.headers || {} } );
+    return this.fromResponse( res );
+  }
+
+  async delete( path: string, option?: RequestOption ) {
+    const res = await this.axios.delete( this.mergePath( path, option?.query || {} ), { headers: option?.headers || {} } );
+    return this.fromResponse( res );
+  }
+
+  async post( path: string, data: any, option?: RequestOption ) {
+    const res = await this.axios.post( this.mergePath( path, option?.query || {} ), data, { headers: option?.headers || {} } );
+    return this.fromResponse( res );
+  }
+
+  async put( path: string, data: any, option?: RequestOption ) {
+    const res = await this.axios.put( this.mergePath( path, option?.query || {} ), data, { headers: option?.headers || {} } );
+    return this.fromResponse( res );
   }
 }
