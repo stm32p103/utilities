@@ -9,7 +9,9 @@ const jira = new Jira( api );
 
 async function avatar() {
   const image = await promises.readFile( './src/credential/avatar.jpg' );
-  let storeAvatar = await jira.userAvatar.storeTemporaryAvater( 'jirauser', image );
+  console.log( '-----------------------------' );
+  console.log( 'store' );
+  let storeAvatar = await jira.userAvatar.storeTemporaryAvater( 'jirauser', { buffer: image, filename: 'avatar.jpg', mime: 'image/jpeg' } );
   let crop = {
     cropperOffsetX: 5,
     cropperOffsetY: 5,
@@ -18,16 +20,31 @@ async function avatar() {
   };
   console.log( storeAvatar );
 
+  console.log( '-----------------------------' );
+  console.log( 'create' );
   let createAvatar = await jira.userAvatar.createFromTemporary( 'jirauser', crop );
   console.log( createAvatar );
 
-  let updateAvatar = await jira.userAvatar.update( 'jirauser', createAvatar );
-  console.log( updateAvatar );
+  console.log( '-----------------------------' );
+  console.log( 'update' );
+  await jira.userAvatar.update( 'jirauser', createAvatar );
 
+  console.log( '-----------------------------' );
+  console.log( 'get' );
   let getAvatars = await jira.userAvatar.get( 'jirauser' );
   console.log( getAvatars.custom );
 
-  // await jira.userAvatar.delete( 'jirauser', getAvatars.custom[0].id );
+  console.log( '-----------------------------' );
+  console.log( 'delete' );
+  await jira.userAvatar.delete( 'jirauser', getAvatars.custom[0].id );
+}
+
+async function deleteAvatars() {
+  console.log( '-----------------------------' );
+  console.log( 'get' );
+  let avatars = await jira.userAvatar.get( 'jirauser' );
+  await Promise.all( avatars.custom.map( avatar => jira.userAvatar.delete( 'jirauser', avatar.id ) ) )
+  console.log( 'deleted');
 }
 
 async function projectCategory() {
@@ -54,7 +71,7 @@ async function projectCategory() {
 
 async function test() {
   try {
-    await projectCategory();
+    await deleteAvatars();
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );

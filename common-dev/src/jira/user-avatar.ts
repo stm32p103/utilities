@@ -1,80 +1,53 @@
 import { RestAPI } from '../rest-api/rest-api'
-import { Avatar, AvatarList, AvaterCropping } from './avatar';
+import { AvatarEP, Avatar, AvatarList, AvaterCropping, AvatarImage } from './avatar';
 export class UserAvatarEP {
-  constructor( private api: RestAPI ) {}
+  constructor( private avatar: AvatarEP ) {}
 
   // Create avatar from temporary
   // POST /rest/api/2/user/avatar
   async createFromTemporary( username: string, crop: AvaterCropping ) {
-    const path = `/rest/api/2/user/avatar`;
-    const res = await this.api.post( path, crop, { 
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-Atlassian-Token': 'no-check'
-      }, 
-      query: {
-        username: username
-      }
-    } );
-
-    return res as Avatar;
+    const res = await this.avatar.createFromTemporary( { 
+      path: `/rest/api/2/user/avatar`,
+      query: { username: username } 
+    }, crop );
+    return res;
   }
 
   // Store temporary avatar
   // POST /rest/api/2/user/avatar/temporary
-  async storeTemporaryAvater( username: string, data: Buffer ) {
-    const path = `/rest/api/2/user/avatar/temporary`;
-    const res = await this.api.post( path, data, {
-      headers: {
-        'Content-Type': 'image/jpeg',
-        'X-Atlassian-Token': 'no-check'
-      },
-      query: {
-        username: username,
-        filename: 'avatar.jpg',
-      }
-    } );
-
-    return res as AvaterCropping;
+  async storeTemporaryAvater( username: string, image: AvatarImage ) {
+    const res = await this.avatar.storeTemporaryAvater( { 
+      path: `/rest/api/2/user/avatar/temporary`,
+      query: { username: username } 
+    }, image );
+    return res;
   }
 
   // Update project avatar
   // PUT /rest/api/2/user/avatar
-  async update( username: string, data: Avatar ) {
-    const path = `/rest/api/2/user/avatar`;
-    const res = await this.api.put( path, JSON.stringify( data ), {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Atlassian-Token': 'no-check'
-      },
-      query: {
-        username: username
-      }
-    } );
-
-    return res as Avatar;
+  async update( username: string, avatar: Avatar ) {
+    const res = await this.avatar.update( { 
+      path: `/rest/api/2/user/avatar`,
+      query: { username: username } 
+    }, avatar );
   }
 
   // Delete avatar
   // DELETE /rest/api/2/user/avatar/{id}
   async delete( username: string, avatarId: string ) {
-    const path = `/rest/api/2/user/avatar/${avatarId}`;
-    const res = await this.api.delete( path , { 
-      query: {
-        username: username
-      }
+    await this.avatar.delete( { 
+      path: `/rest/api/2/user/avatar/${avatarId}`,
+      query: { username: username } 
     } );
   }
 
   // Get all avatars
   // GET /rest/api/2/user/avatars
   async get( username: string ) {
-    const path = `/rest/api/2/user/avatars`;
-    const res = await this.api.get( path , { 
-      query: {
-        username: username
-      }
+    const res = await this.avatar.get( { 
+      path: `/rest/api/2/user/avatars`,
+      query: { username: username } 
     } );
-    return res as AvatarList;
+    return res;
   }
 }

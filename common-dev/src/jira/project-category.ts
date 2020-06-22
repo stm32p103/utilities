@@ -12,6 +12,7 @@ type RequiredFieldForCreate = 'name' | 'description';
 export type ProjectCategoryForCreate = RequiresKey<ProjectCategory, RequiredFieldForCreate>;
 export type ConcreteProjectCategory = RequiresKey<ProjectCategory, 'id'>;
 
+// api/2/projectCategory
 export class ProjectCategoryEP {
   constructor( private api: RestAPI ) {}
 

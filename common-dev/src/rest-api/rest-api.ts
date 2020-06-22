@@ -5,9 +5,12 @@ import { CookieJar } from 'tough-cookie';
 import { query2string } from './query';
 type KeyValue<T> = { [key: string]: T };
 
+export type RequestHeader = KeyValue<string>;
+export type RequestQuery = KeyValue<any>;
+
 export interface RequestOption {
-  headers?: KeyValue<string>;
-  query?: KeyValue<any>;
+  headers?: RequestHeader;
+  query?: RequestQuery;
 }
 
 export interface RestApiAuth {
