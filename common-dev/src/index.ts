@@ -21,32 +21,39 @@ async function test() {
 
     // let addAttachment = await jira.issue.addAttachment( 'SAMPLES-1', 'sample.jpg', image );
     // console.log( addAttachment );
-
+/*
     let issue = await jira.issue.get( 'SAMPLES-1' );
-    let attachmentIds: string[] = issue.data.fields.attachment.map( attachment => attachment.id as string );
+    let attachmentIds: string[] = issue.fields.attachment.map( attachment => attachment.id as string );
     console.log( attachmentIds );
 
     const meta = await jira.attachment.getMeta();
-    console.log( meta.data );
+    console.log( meta );
 
     let user = await jira.user.findAssignable( { project: 'SAMPLES' } );
     console.log( user );
+*/ 
 
-    let storeAvatar = await jira.userAvatar.storeTemporaryAvater( 'jirauser', image );
-    let crop = {
-      cropperOffsetX: 10,
-      cropperOffsetY: 10,
-      cropperWidth:   400,
-      needsCropping:  true
-    };
-    console.log( storeAvatar.data );
+    // let storeAvatar = await jira.userAvatar.storeTemporaryAvater( 'jirauser', image );
+    // let crop = {
+    //   cropperOffsetX: 5,
+    //   cropperOffsetY: 5,
+    //   cropperWidth:   475,
+    //   needsCropping:  true
+    // };
+    // console.log( storeAvatar );
 
-    let createAvatar = await jira.userAvatar.createFromTemporary( 'jirauser', crop, storeAvatar.cookies );
-    console.log( createAvatar.data );
+    // let createAvatar = await jira.userAvatar.createFromTemporary( 'jirauser', crop );
+    // console.log( createAvatar );
 
-    let updateAvatar = await jira.userAvatar.update( 'jirauser', createAvatar.data, storeAvatar.cookies );
-    console.log( updateAvatar.data );
+    // let updateAvatar = await jira.userAvatar.update( 'jirauser', createAvatar );
+    // console.log( updateAvatar );
 
+    let getAvatars = await jira.userAvatar.get( 'jirauser' );
+    const a = getAvatars.custom.map( avatar => avatar.urls["48x48"] );
+    console.log( a );
+
+    // let deleteAvatar = await Promise.all( getAvatars.map( avatar => jira.userAvatar.delete( 'jirauser', avatar.id ) ) );
+    // console.log( deleteAvatar );
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );
@@ -54,5 +61,4 @@ async function test() {
     }
   }
 }
-
 test();

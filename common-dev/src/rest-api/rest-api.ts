@@ -1,6 +1,8 @@
-import { query2string } from './query';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axiosCookieJarSupport from 'axios-cookiejar-support';
+import { CookieJar } from 'tough-cookie';
 
+import { query2string } from './query';
 type KeyValue<T> = { [key: string]: T };
 
 export interface RequestOption {
@@ -13,18 +15,17 @@ export interface RestApiAuth {
   password: string;
 }
 
-export interface RestApiResponse<T> {
-  data: T;
-  status: number;
-  cookies: string[];
-}
-
 export class RestAPI {
   private readonly axios: AxiosInstance;
   constructor( base: URL ) {
     this.axios = axios.create( {
       baseURL: base.toString()
     } );
+    
+    // cookie support
+    axiosCookieJarSupport( this.axios );
+    this.axios.defaults.withCredentials = true;
+    this.axios.defaults.jar = new CookieJar();
   }
 
   configureAuth( auth: RestApiAuth ) {
@@ -35,32 +36,23 @@ export class RestAPI {
     return path + query2string( query );
   }
 
-  private fromResponse( res: AxiosResponse ): RestApiResponse<any> {
-    const cookies = res.headers['set-cookie'] as string[];
-    return {
-      data: res.data,
-      status: res.status,
-      cookies: cookies
-    };
-  }
-
   async get( path: string, option?: RequestOption ) {
     const res = await this.axios.get( this.mergePath( path, option?.query || {} ), { headers: option?.headers || {} } );
-    return this.fromResponse( res );
+    return res.data;
   }
 
   async delete( path: string, option?: RequestOption ) {
     const res = await this.axios.delete( this.mergePath( path, option?.query || {} ), { headers: option?.headers || {} } );
-    return this.fromResponse( res );
+    return res.data;
   }
 
   async post( path: string, data: any, option?: RequestOption ) {
     const res = await this.axios.post( this.mergePath( path, option?.query || {} ), data, { headers: option?.headers || {} } );
-    return this.fromResponse( res );
+    return res.data;
   }
 
   async put( path: string, data: any, option?: RequestOption ) {
     const res = await this.axios.put( this.mergePath( path, option?.query || {} ), data, { headers: option?.headers || {} } );
-    return this.fromResponse( res );
+    return res.data;
   }
 }

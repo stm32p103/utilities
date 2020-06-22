@@ -1,6 +1,5 @@
-import { RestAPI } from '../rest-api/rest-api'
+import { RestAPI } from '../rest-api'
 import { SimpleListWrapper } from './common/types';
-
 
 export interface Group {
   name?: string;
@@ -74,6 +73,7 @@ export class UserEP {
   async findAssignable( query: AssignableUserQuery ){
     const path = `/rest/api/2/user/assignable/search`;
     const res = await this.api.get( path, { query: query } );
-    return res.data as User[];
+    return res as User[];
   }
 }
+
