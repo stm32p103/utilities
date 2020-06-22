@@ -1,5 +1,4 @@
-import { RestAPI } from '../rest-api/rest-api'
-import { AvatarEP, Avatar, AvatarList, AvaterCropping, AvatarImage } from './avatar';
+import { AvatarEP, Avatar, AvaterCropping, AvatarImage } from './avatar';
 export class UserAvatarEP {
   constructor( private avatar: AvatarEP ) {}
 

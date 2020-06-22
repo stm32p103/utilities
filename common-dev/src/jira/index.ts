@@ -5,6 +5,7 @@ import { UserEP } from './user';
 import { AvatarEP } from './avatar';
 import { UserAvatarEP } from './user-avatar';
 import { ProjectEP } from './project';
+import { ProjectTypeEP } from './project-type';
 import { ProjectCategoryEP } from './project-category';
 
 export class Jira {
@@ -14,6 +15,7 @@ export class Jira {
   public readonly userAvatar: UserAvatarEP;
   public readonly project: ProjectEP;
   public readonly projectCategory: ProjectCategoryEP;
+  public readonly projectType: ProjectTypeEP;
 
   constructor( private api: RestAPI ) {
     const avatar = new AvatarEP( this.api );
@@ -23,5 +25,6 @@ export class Jira {
     this.userAvatar = new UserAvatarEP( avatar );
     this.project = new ProjectEP( this.api );
     this.projectCategory = new ProjectCategoryEP( this.api );
+    this.projectType = new ProjectTypeEP( this.api );
   }
 }
