@@ -1,6 +1,6 @@
 import { RestAPI } from '../rest-api'
 import { User } from './user';
-import { GetResponse } from './common/types';
+import { ResponseOf } from './common/types';
 
 export interface AttachmentMeta {
   enabled: boolean;
@@ -25,7 +25,7 @@ export class AttachmentEP {
   async get( id: string ) {
     const path = `/rest/api/2/attachment/${id}`;
     const res = await this.api.get( path );
-    return res as Attachment & GetResponse;
+    return res as ResponseOf<Attachment>;
   }
   
   async remove( id: string ) {

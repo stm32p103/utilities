@@ -30,6 +30,19 @@ async function avatar() {
   // await jira.userAvatar.delete( 'jirauser', getAvatars.custom[0].id );
 }
 
+async function projectCategory() {
+  const categories = await jira.projectCategory.getAll();
+  console.log( categories );
+
+  const category = await jira.projectCategory.get( categories[1].id );
+  console.log( category );
+
+  category.name = `projectCategory-${category.id}`;
+
+  const updated = await jira.projectCategory.update( category );
+  console.log( updated );
+}
+
 async function test() {
   try {
   } catch( err ) {
