@@ -32,19 +32,29 @@ async function avatar() {
 
 async function projectCategory() {
   const categories = await jira.projectCategory.getAll();
+  console.log( '-----------------------------' );
   console.log( categories );
 
   const category = await jira.projectCategory.get( categories[1].id );
+  console.log( '-----------------------------' );
   console.log( category );
 
   category.name = `projectCategory-${category.id}`;
 
   const updated = await jira.projectCategory.update( category );
+  console.log( '-----------------------------' );
   console.log( updated );
+
+  const newCategory = await jira.projectCategory.create( { name: 'Sample Category', description: 'sample' } );
+  console.log( '-----------------------------' );
+  console.log( newCategory );
+
+  await jira.projectCategory.delete( newCategory.id );
 }
 
 async function test() {
   try {
+    await projectCategory();
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );

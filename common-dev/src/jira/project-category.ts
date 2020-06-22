@@ -8,6 +8,8 @@ export interface ProjectCategory {
   self?: string;
 }
 
+type RequiredFieldForCreate = 'name' | 'description';
+export type ProjectCategoryForCreate = RequiresKey<ProjectCategory, RequiredFieldForCreate>;
 export type ConcreteProjectCategory = RequiresKey<ProjectCategory, 'id'>;
 
 export class ProjectCategoryEP {
@@ -21,6 +23,14 @@ export class ProjectCategoryEP {
     return res as ConcreteProjectCategory[];
   }
   
+  // Create project category
+  // POST /rest/api/2/projectCategory
+  async create( projectCategory: ProjectCategoryForCreate ) {
+    const path = `/rest/api/2/projectCategory`;
+    const res = await this.api.post( path, projectCategory );
+    return res as ConcreteProjectCategory;
+  }
+
   // Get project category by id
   // GET /rest/api/2/projectCategory/{id}
   async get( id: string ) {
