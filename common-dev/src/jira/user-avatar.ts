@@ -88,8 +88,6 @@ export class UserAvatarEP {
         username: username
       }
     } );
-
-    return res as Avatar;
   }
 
   // Get all avatars
