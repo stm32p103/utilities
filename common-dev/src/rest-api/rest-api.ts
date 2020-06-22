@@ -13,8 +13,8 @@ export interface RestApiAuth {
   password: string;
 }
 
-export interface RestApiResponse {
-  data: any;
+export interface RestApiResponse<T> {
+  data: T;
   status: number;
   cookies: string[];
 }
@@ -35,7 +35,7 @@ export class RestAPI {
     return path + query2string( query );
   }
 
-  private fromResponse( res: AxiosResponse ): RestApiResponse {
+  private fromResponse( res: AxiosResponse ): RestApiResponse<any> {
     const cookies = res.headers['set-cookie'] as string[];
     return {
       data: res.data,
