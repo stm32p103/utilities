@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 

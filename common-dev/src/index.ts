@@ -69,23 +69,27 @@ async function projectCategory() {
   await jira.projectCategory.delete( newCategory.id );
 }
 
+async function testProjectType() {
+  console.log( '-----------------------------' );
+  console.log( 'getAll' );
+  const allTypes = await jira.projectType.getAll();
+  console.log( allTypes );
+
+  console.log( '-----------------------------' );
+  console.log( 'get' );
+  const getByType = await jira.projectType.get( 'business' );
+  console.log( getByType );
+
+  console.log( '-----------------------------' );
+  const accessible = await jira.projectType.getAccessible( 'software' );
+  console.log( 'getAccessible' );
+  console.log( accessible );
+}
+
 async function test() {
   try {
-    console.log( '-----------------------------' );
-    console.log( 'getAll' );
-    const allTypes = await jira.projectType.getAll();
-    console.log( allTypes );
-
-    console.log( '-----------------------------' );
-    console.log( 'get' );
-    const getByType = await jira.projectType.get( 'business' );
-    console.log( getByType );
-
-    console.log( '-----------------------------' );
-    const accessible = await jira.projectType.getAccessible( 'software' );
-    console.log( 'getAccessible' );
-    console.log( accessible );
-
+    const component = await jira.project.getComponents('10000');
+    console.log( component );
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );
