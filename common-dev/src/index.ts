@@ -88,8 +88,18 @@ async function testProjectType() {
 
 async function test() {
   try {
-    const component = await jira.project.getComponents( { id: '10000' } );
-    console.log( component );
+    console.log( '-----------------------------' );
+    console.log( 'getAll' );
+    const projects = await jira.project.getAll( [ 'lead' ] );
+    console.log( projects );
+    console.log( projects[0].lead );
+    // console.log( '-----------------------------' );
+    // console.log( 'get' );
+    // const project = await jira.project.get( projects[0] );
+    // console.log( project );
+
+    // const component = await jira.project.getComponents( { id: '10000' } );
+    // console.log( component );
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );

@@ -25,5 +25,6 @@ export function query2string( query: { [ key: string ]: any } ) {
     queryString = '?' + queries.join( '&' );
   }
 
+  console.log( queryString );
   return queryString;
 }
