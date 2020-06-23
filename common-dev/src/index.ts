@@ -88,7 +88,7 @@ async function testProjectType() {
 
 async function test() {
   try {
-    const component = await jira.project.getComponents('10000');
+    const component = await jira.project.getComponents( { id: '10000' } );
     console.log( component );
   } catch( err ) {
     if( err.response ) {
