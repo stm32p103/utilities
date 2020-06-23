@@ -88,18 +88,46 @@ async function testProjectType() {
 
 async function test() {
   try {
-    console.log( '-----------------------------' );
-    console.log( 'getAll' );
-    const projects = await jira.project.getAll( [ 'lead' ] );
-    console.log( projects );
-    console.log( projects[0].lead );
+
+    // console.log( created );
+    // console.log( '-----------------------------' );
+    // console.log( 'getAll' );
+    // const projects = await jira.project.getAll( [ 'lead' ] );
+    // console.log( projects );
+    // console.log( projects[0].lead );
+    // const project = projects[1];
+
+    // const updated = await jira.project.update( project.id, { name: 'New Project2' } );
+    // console.log( updated );
+
+
+    
     // console.log( '-----------------------------' );
     // console.log( 'get' );
-    // const project = await jira.project.get( projects[0] );
-    // console.log( project );
 
-    // const component = await jira.project.getComponents( { id: '10000' } );
-    // console.log( component );
+    const project = await jira.project.get( 'SAMPLES' );
+    const dst = await jira.project.get( 'API' );
+
+    const a = Object.assign( {}, dst ) as any;
+    a.name = 'New Projectxxx';
+    a.key = 'API111';
+    a.lead = 'jadmin';
+    a.expand = undefined;
+    a.self = undefined;
+    a.id = undefined;
+    a.avatarUrls = undefined;
+    a.components = project.components;
+    a.issueTypes = project.issueTypes;
+    a.versions = undefined;
+    a.roles = undefined;
+    a.projectCategory = undefined;
+    a.archived = undefined;
+    
+    console.log( a );
+
+    const updated = await jira.project.update( a.id, a );
+    console.log( updated )
+
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );
