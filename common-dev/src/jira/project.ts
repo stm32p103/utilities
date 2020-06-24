@@ -1,16 +1,17 @@
 import { RestAPI } from '../rest-api'
 import { User } from './user';
-import { RequiresKey, SubKeyof, Replace, SelectProperty } from './common/types';
+import { RequiresKey, SubKeyof, Replace, SelectProperty, PagenatedListWrapper } from './common/types';
 import { AvatarUrls } from './avatar';
-import { ConcreteComponent } from './component';
+import { Component } from './component';
 import { ConcreteProjectCategory } from './project-category';
+import { Version } from './version';
 
 export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
 export interface Project {
   archived?:        boolean;
   assigneeType?:    ProjectAssigneeType;
   avatarUrls?:      AvatarUrls;
-  components?:      ConcreteComponent[];
+  components?:      Component[];
   description?:     string;
   email?:           string;
   expand?:          string;
@@ -25,23 +26,59 @@ export interface Project {
   roles?:           any // Roles;
   self?:            string;
   url?:             string;
-  versions?:        any[]; // Version[];
+  versions?:        Version[];
 }
 
-// 応答
-// Jira API のSchemaに対して、一部のプロパティしか返ってこないことに注意する。
-export type GetProjectResponse = RequiresKey<Project, 'id' | 'key' | 'description' | 'lead' | 'components' | 'issueTypes' | 'assigneeType' | 'versions' | 'name' | 'roles' | 'avatarUrls' | 'projectTypeKey' | 'archived'>;
+// Arguments
+// to prevent "Unrecognized field" error, limit property of Project
+export type CreateProjectArg = Replace<SelectProperty<Project, 
+    'projectTypeKey'    // required
+  | 'key' 
+  | 'lead' 
+  | 'name'
+  , 'description'       // optional
+  | 'assigneeType'>
+  , { lead: string }>;  // lead username
+export type UpdateProjectArg = Replace<SelectProperty<Project,
+  never                 // required
+  , 'key'               // optional
+  | 'lead'
+  | 'name'
+  | 'description'
+  | 'assigneeType'>
+  , { lead?: string }>; // lead username
+export type ExpandKey = SubKeyof<Project, 'description' | 'lead' | 'url' | 'projectKeys'>;
+
+// Responses
+export type GetProjectResponse = RequiresKey<Project, 
+    'id' 
+  | 'key' 
+  | 'description' 
+  | 'lead' 
+  | 'components' 
+  | 'issueTypes' 
+  | 'assigneeType' 
+  | 'versions' 
+  | 'name' 
+  | 'roles' 
+  | 'avatarUrls' 
+  | 'projectTypeKey' 
+  | 'archived'>;
 export type UpdateProjectResponse = GetProjectResponse;
-export type GetAllProjectResponse = RequiresKey<Project, 'id' | 'key' | 'name' | 'avatarUrls' | 'projectCategory'>;
+export type GetAllProjectResponse = RequiresKey<Project, 
+    'id' 
+  | 'key' 
+  | 'name' 
+  | 'avatarUrls' 
+  | 'projectCategory'>;
 export type CreateProjectResponse = Pick<Project, 'id' | 'key'>;
 
-// 引数の型
-// 基本的に他のオブジェクトを参照するプロパティはCreate/Updateで設定できない。
-//   例えば、ComponentはComponent側で親Projectを指定する。
-// leadのみ、Userの代わりにユーザ名をstringで設定する。
-export type CreateProjectArg = Replace<SelectProperty<Project, 'projectTypeKey' | 'key' | 'lead' | 'name', 'description' | 'assigneeType'>, { lead: string }>;
-export type UpdateProjectArg = Partial<CreateProjectArg>;
-export type ExpandKey = SubKeyof<Project, 'description' | 'lead' | 'url' | 'projectKeys'>;
+export interface VersionsQuery {
+  startAt?: number;
+  maxResults?: number;
+  orderBy?: 'sequence' | 'name' | 'startDate' | 'releaseDate';
+  expand?: string;
+}
 
 export class ProjectEP {
   constructor( private api: RestAPI ) {}
@@ -77,11 +114,59 @@ export class ProjectEP {
     return res as UpdateProjectResponse;
   }
 
+  // Delete project
+  // DELETE /rest/api/2/project/{projectIdOrKey}
+  async delete( idOrKey: string ) {
+    const path = `/rest/api/2/project/${idOrKey}`;
+    await this.api.delete( path );
+  }
+
+  // Archive project
+  // PUT /rest/api/2/project/{projectIdOrKey}/archive
+  async archive( idOrKey: string ) {
+    const path = `/rest/api/2/project/${idOrKey}/archive`;
+    await this.api.put( path );
+  }
+
   // Get project components
   // GET /rest/api/2/project/{projectIdOrKey}/components
   async getComponents( idOrKey: string ) {
     const path = `/rest/api/2/project/${idOrKey}/components`;
     const res = await this.api.get( path );
-    return res as ConcreteComponent[];
+    return res as Component[];
   }
+
+  // Restore project
+  // PUT /rest/api/2/project/{projectIdOrKey}/restore
+  async restore( idOrKey: string ) {
+    const path = `/rest/api/2/project/${idOrKey}/restore`;
+    await this.api.put( path );
+  }
+
+  // Get all statuses
+  // GET /rest/api/2/project/{projectIdOrKey}/statuses
+  async statuses( idOrKey: string ) {
+    const path = `/rest/api/2/project/${idOrKey}/statuses`;
+    const res = await this.api.get( path );
+    return res;
+  }
+
+  // Update project type
+  // PUT /rest/api/2/project/{projectIdOrKey}/type/{newProjectTypeKey}
+  async updateProjectType( idOrKey: string, projectTypeKey: string ) {
+    const path = `/rest/api/2/project/${idOrKey}/type/${projectTypeKey}`;
+    const res = await this.api.put( path );
+    return res as UpdateProjectResponse;
+  }
+
+  // Get project versions paginated
+  // GET /rest/api/2/project/{projectIdOrKey}/version
+  async getVersionsPagenated( idOrKey: string, query?: VersionsQuery ) {
+    const path = `/rest/api/2/project/${idOrKey}/version`;
+    const res = await this.api.get( path, { query: query } );
+    return res as PagenatedListWrapper<Version>;
+  }
+
+  // Get project versions
+  // GET /rest/api/2/project/{projectIdOrKey}/versions
 }

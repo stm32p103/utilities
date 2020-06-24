@@ -54,8 +54,8 @@ export class RestAPI {
     return res.data;
   }
 
-  async put( path: string, data: any, option?: RequestOption ) {
-    const res = await this.axios.put( this.mergePath( path, option?.query || {} ), data, { headers: option?.headers || {} } );
+  async put( path: string, data?: any, option?: RequestOption ) {
+    const res = await this.axios.put( this.mergePath( path, option?.query || {} ), data || {}, { headers: option?.headers || {} } );
     return res.data;
   }
 }

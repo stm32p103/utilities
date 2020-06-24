@@ -1,5 +1,5 @@
 import { RestAPI } from '../rest-api'
-import { RequiresKey } from './common/types';
+import { RequiresKey, SelectProperty, Replace } from './common/types';
 import { User } from './user';
 
 export type AssigneeType = 'COMPONENT_LEAD' | 'PROJECT_DEFAULT' | 'PROJECT_LEAD' | 'UNASSIGNED';
@@ -15,20 +15,49 @@ export interface Component {
   leadUserName?:       string;
   name?:               string;
   project?:            string;
-  projectID?:          number;
+  projectId?:          number;
   realAssignee?:       User;
   realAssigneeType?:   AssigneeType;
   self?:               string;
 }
+
 
 export interface ComponentRelatedIssueCounts {
   issueCount: number;
   self?:      string;
 }
 
-type RequiredFieldForCreate = 'name' | 'description';
-export type ProjectCategoryForCreate = RequiresKey<Component, RequiredFieldForCreate>;
-export type ConcreteComponent = RequiresKey<Component, 'id'>;
+export type CreateComponentArg = SelectProperty<Component, 
+    'name'
+  | 'project'         // project key
+  , 'assigneeType'
+  | 'description'
+  | 'lead'            //  user with name or key or id
+  | 'realAssigneeType'>;
+
+export type UpdateComponentArg = Component;
+
+export type CreateComponentResponse = SelectProperty<Component,
+    'id'
+  | 'name'
+  | 'assigneeType'
+  | 'realAssigneeType'
+  | 'realAssignee'
+  | 'isAssigneeTypeValid'
+  | 'project'
+  | 'projectId'
+  | 'archived', never>;
+
+export type GetComponentResponse = SelectProperty<Component,
+'id'
+| 'name'
+| 'assigneeType'
+| 'realAssigneeType'
+| 'realAssignee'
+| 'isAssigneeTypeValid'
+| 'project'
+| 'projectId'
+| 'archived', never>;
 
 // api/2/projectCategory
 export class ComponentEP {
@@ -36,10 +65,10 @@ export class ComponentEP {
 
   // Create project category
   // POST /rest/api/2/projectCategory
-  async create( component: Component ) {
+  async create( component: CreateComponentArg ) {
     const path = `/rest/api/2/component`;
     const res = await this.api.post( path, component );
-    return res as ConcreteComponent;
+    return res as CreateComponentResponse;
   }
 
   // Get component
@@ -47,15 +76,15 @@ export class ComponentEP {
   async get( id: string ) {
     const path = `/rest/api/2/component/${id}`;
     const res = await this.api.get( path );
-    return res as ConcreteComponent;
+    return res as GetComponentResponse;
   }
 
   // Update component
   // PUT /rest/api/2/component/{id}
-  async update( component: ConcreteComponent ) {
+  async update( component: UpdateComponentArg ) {
     const path = `/rest/api/2/component/${component.id}`;
     const res = await this.api.put( path, component );
-    return res as ConcreteComponent;
+    return res as Component;
   }
   
   // Delete

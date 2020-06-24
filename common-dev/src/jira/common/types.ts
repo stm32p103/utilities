@@ -4,6 +4,16 @@ export interface SimpleListWrapper<T> {
   size: number;
 }
 
+export interface PagenatedListWrapper<T> {
+  isLast?:    boolean;
+  maxResults: number;
+  nextPage?:  string;
+  self?:      string;
+  startAt:    number;
+  total?:     number;
+  values?:    T[];
+}
+
 // 指定したキーが必須
 export type RequiresKey<T, K extends keyof T> = Required<Pick<T, K>> & Exclude<T,K>;
 

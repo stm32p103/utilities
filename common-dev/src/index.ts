@@ -7,6 +7,49 @@ const api = new RestAPI( new URL( 'http://localhost:8080' ) );
 api.configureAuth( CREDENTIAL );
 const jira = new Jira( api );
 
+async function test() {
+  try {
+    const project = await jira.project.get( 'API2' );
+    // const update = await jira.project.update( project.id, {
+    //   lead: 'jirauser'
+    // } );
+    // const statuses = await jira.project.statuses( project.id );
+    // console.log( statuses );
+    // const updateProjectType = await jira.project.updateProjectType( project.id, 'business' );
+    // console.log( updateProjectType );
+    const versions = await jira.project.getVersionsPagenated( project.id, { orderBy: "name" } );
+    console.log( versions );
+  } catch( err ) {
+    if( err.response ) {
+      console.log( err.response.status );
+      console.log( err.response.data );
+    }
+  }
+}
+test();
+
+
+
+async function project() {
+    // console.log( created );
+    // console.log( '-----------------------------' );
+    // console.log( 'getAll' );
+    // const projects = await jira.project.getAll( [ 'lead' ] );
+    // console.log( projects );
+    // console.log( projects[0].lead );
+    // const project = projects[1];
+
+    // const updated = await jira.project.update( project.id, { name: 'New Project2' } );
+    // console.log( updated );
+
+    // console.log( '-----------------------------' );
+    // console.log( 'get' );
+
+    const project = await jira.project.get( 'SAMPLES' );
+    const dst = await jira.project.get( 'API' );
+}
+
+
 async function avatar() {
   const image = await promises.readFile( './src/credential/avatar.jpg' );
   console.log( '-----------------------------' );
@@ -85,54 +128,3 @@ async function testProjectType() {
   console.log( 'getAccessible' );
   console.log( accessible );
 }
-
-async function test() {
-  try {
-
-    // console.log( created );
-    // console.log( '-----------------------------' );
-    // console.log( 'getAll' );
-    // const projects = await jira.project.getAll( [ 'lead' ] );
-    // console.log( projects );
-    // console.log( projects[0].lead );
-    // const project = projects[1];
-
-    // const updated = await jira.project.update( project.id, { name: 'New Project2' } );
-    // console.log( updated );
-
-
-    
-    // console.log( '-----------------------------' );
-    // console.log( 'get' );
-
-    const project = await jira.project.get( 'SAMPLES' );
-    const dst = await jira.project.get( 'API' );
-
-    const a = Object.assign( {}, dst ) as any;
-    a.name = 'New Projectxxx';
-    a.key = 'API111';
-    a.lead = 'jadmin';
-    a.expand = undefined;
-    a.self = undefined;
-    a.id = undefined;
-    a.avatarUrls = undefined;
-    a.components = project.components;
-    a.issueTypes = project.issueTypes;
-    a.versions = undefined;
-    a.roles = undefined;
-    a.projectCategory = undefined;
-    a.archived = undefined;
-    
-    console.log( a );
-
-    const updated = await jira.project.update( a.id, a );
-    console.log( updated )
-
-  } catch( err ) {
-    if( err.response ) {
-      console.log( err.response.status );
-      console.log( err.response.data );
-    }
-  }
-}
-test();
