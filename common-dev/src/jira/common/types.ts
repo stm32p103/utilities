@@ -1,4 +1,4 @@
-import { timeStamp } from 'console';
+
 
 export interface SimpleListWrapper<T> {
   items?: T[];
@@ -15,6 +15,8 @@ export interface PagenatedList<T> {
   total?:     number;
   values?:    T[];
 }
+
+export type Expandable<T> = T & { expand: string };
 
 // 指定したキーが必須
 export type RequiresKey<T, K extends keyof T> = Required<Pick<T, K>> & Exclude<T,K>;

@@ -8,7 +8,7 @@ import { User, UserSpecifier } from './user';
 export type AssigneeType = 'COMPONENT_LEAD' | 'PROJECT_DEFAULT' | 'PROJECT_LEAD' | 'UNASSIGNED';
 
 /**
- * Jira REST API Component
+ * Jira REST API: Component
  */
 export interface Component {
   archived?:           boolean;

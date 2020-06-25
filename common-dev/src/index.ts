@@ -9,9 +9,10 @@ const jira = new Jira( api );
 
 async function test() {
   try {
-    const project = await jira.project.get( 'API2' );
-    const projects = (await jira.project.getAll()).map( p => p.id );
-    console.log( projects );
+    // const project = await jira.project.get( 'API2' );
+    // const projects = (await jira.project.getAll()).map( p => p.id );
+    // console.log( projects );
+    await testProject( 'APIX', 'jadmin' );
     // const update = await jira.project.update( project.id, {
     //   lead: 'jirauser'
     // } );
@@ -21,7 +22,7 @@ async function test() {
     // console.log( updateProjectType );
     // const versions = await jira.project.getVersionsPagenated( project.id, { orderBy: "name" } );
     // console.log( versions );
-    await testComponent(project.key);
+    // await testComponent(project.key);
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );
@@ -46,51 +47,66 @@ async function testComponent( projectId: string ) {
   const create = await jira.component.create( { 
     project: projectId,
     name: 'Test Component',
-    lead: { name: 'jadmin', active: true },
-    description: 'Test Component Description.',
-    realAssigneeType: "UNASSIGNED"
+    lead: { name: 'jadmin' },
+    description: 'Test Component Description.'
   } );
   console.log( create );
   console.log( '#########################################' );
 
-  // const get = await jira.component.get( create.id );
-  // console.log( get );
+  const get = await jira.component.get( create.id );
+  console.log( get );
 
   const update = await jira.component.update( create.id, { lead: { name: 'jadmin' } } );
   console.log( update );
-
 }
 
+async function testProject( key: string, username: string ) {
+    console.log( '-----------------------------' );
+    console.log( 'getAll' );
+    const projects = await jira.project.getAll();
+    console.log( getKeys( projects[0] ) );
+    console.log( projects[0].expand.split(',') );
 
+    console.log( '-----------------------------' );
+    console.log( 'create' );
+    const created = await jira.project.create( { key: key, lead: username, name: 'New Project!!!', projectTypeKey: 'software' } );
+    console.log( getKeys( created ) );
 
+    console.log( '-----------------------------' );
+    console.log( 'get' );
+    const get = await jira.project.get( created.id  );
+    console.log( getKeys( get ) );
+    console.log( get.expand.split(',') );
 
+    console.log( '-----------------------------' );
+    console.log( 'update' );
+    const update = await jira.project.update( created.id, {
+      name: 'Updated Project!!!',
+      lead: 'jadmin',
+      assigneeType: 'PROJECT_LEAD',
+      description: 'Updated description.',
+      key: key + key
+    } );
+    console.log( update );
+    console.log( getKeys( update ) );
+    console.log( update.expand.split(',') );
 
+    console.log( '-----------------------------' );
+    console.log( 'versions' );
+    const versions = await jira.project.getVersions( 'SMP' );
+    console.log( versions );
 
-
-
-
-
-
-
-
-
-async function project() {
-    // console.log( created );
-    // console.log( '-----------------------------' );
-    // console.log( 'getAll' );
-    // const projects = await jira.project.getAll( [ 'lead' ] );
-    // console.log( projects );
-    // console.log( projects[0].lead );
-    // const project = projects[1];
-
+    console.log( '-----------------------------' );
+    console.log( 'delete' );
+    await jira.project.delete( update.id );
     // const updated = await jira.project.update( project.id, { name: 'New Project2' } );
     // console.log( updated );
 
     // console.log( '-----------------------------' );
     // console.log( 'get' );
 
-    const project = await jira.project.get( 'SAMPLES' );
-    const dst = await jira.project.get( 'API' );
+    // const project = await jira.project.get( 'SAMPLES' );
+    // const dst = await jira.project.get( 'API' );
 }
 
 
