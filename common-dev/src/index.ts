@@ -10,6 +10,8 @@ const jira = new Jira( api );
 async function test() {
   try {
     const project = await jira.project.get( 'API2' );
+    const projects = (await jira.project.getAll()).map( p => p.id );
+    console.log( projects );
     // const update = await jira.project.update( project.id, {
     //   lead: 'jirauser'
     // } );
@@ -17,8 +19,9 @@ async function test() {
     // console.log( statuses );
     // const updateProjectType = await jira.project.updateProjectType( project.id, 'business' );
     // console.log( updateProjectType );
-    const versions = await jira.project.getVersionsPagenated( project.id, { orderBy: "name" } );
-    console.log( versions );
+    // const versions = await jira.project.getVersionsPagenated( project.id, { orderBy: "name" } );
+    // console.log( versions );
+    await testComponent(project.key);
   } catch( err ) {
     if( err.response ) {
       console.log( err.response.status );
@@ -27,6 +30,47 @@ async function test() {
   }
 }
 test();
+
+function getKeys( obj: { [key: string]: any } ) {
+  const arr: string[] = [];
+  for( let key in obj ) {
+    arr.push( key );
+  }
+  return arr;
+}
+
+async function testComponent( projectId: string ) {
+  const components = await jira.project.getComponents( projectId );  
+  await Promise.all( components.map( c => jira.component.delete( c.id ) ) );
+  
+  const create = await jira.component.create( { 
+    project: projectId,
+    name: 'Test Component',
+    lead: { name: 'jadmin', active: true },
+    description: 'Test Component Description.',
+    realAssigneeType: "UNASSIGNED"
+  } );
+  console.log( create );
+  console.log( '#########################################' );
+
+  // const get = await jira.component.get( create.id );
+  // console.log( get );
+
+  const update = await jira.component.update( create.id, { lead: { name: 'jadmin' } } );
+  console.log( update );
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

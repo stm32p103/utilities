@@ -1,5 +1,5 @@
 import { RestAPI } from '../rest-api'
-import { SimpleListWrapper } from './common/types';
+import { SimpleListWrapper, RequiresOne } from './common/types';
 
 export interface Group {
   name?: string;
@@ -22,6 +22,11 @@ export interface User {
   self?:             string;
   timeZone?:         string;
 }
+
+/**
+ * key or username to specify user.
+ */
+export type UserSpecifier = RequiresOne<Pick<User, 'key' | 'name'>>;
 
 type AssignableUserQueryCommon = {
   username?: string;

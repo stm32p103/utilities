@@ -1,10 +1,12 @@
+import { timeStamp } from 'console';
+
 export interface SimpleListWrapper<T> {
   items?: T[];
   maxResults?: number;
   size: number;
 }
 
-export interface PagenatedListWrapper<T> {
+export interface PagenatedList<T> {
   isLast?:    boolean;
   maxResults: number;
   nextPage?:  string;
@@ -27,9 +29,17 @@ export type RequiresOne<T, U = { [ K in keyof T ]: Pick<T, K> }> = Partial<T> & 
 
 // 指定したプロパティの内1つは必須
 export type RequiresOneKey<T, K extends keyof T> = Omit<T,K> & RequiresOne<Pick<T,K>>;
+
+// 指定したプロパティの内1つは必須、他は不要
+
+// キーの一部
 export type SubKeyof<T, K extends keyof T> = keyof Pick<T,K>;
 
 // TのプロパティをRで置き換える
 export type Replace<T, R> = Omit<T, keyof R> & R;
 
-export type SelectProperty<T, Req extends keyof T, Opt extends keyof T> = Required<Pick<T,Req>> & Partial<Pick<T,Opt>>;
+// 型を置き換える
+export type ReplaceType<T, FROM, TO> = { [K in keyof T]: T[K] extends FROM ? TO : T[K] };
+
+
+export type SelectProperty<T, Req extends keyof T, Opt extends keyof T = never> = Required<Pick<T,Req>> & Partial<Pick<T,Opt>>;

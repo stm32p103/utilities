@@ -1,12 +1,11 @@
 import { RestAPI } from '../rest-api'
 import { User } from './user';
-import { RequiresKey, SubKeyof, Replace, SelectProperty, PagenatedListWrapper } from './common/types';
+import { RequiresKey, SubKeyof, Replace, SelectProperty, PagenatedList } from './common/types';
 import { AvatarUrls } from './avatar';
 import { Component } from './component';
 import { ConcreteProjectCategory } from './project-category';
 import { Version } from './version';
 
-export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
 export interface Project {
   archived?:        boolean;
   assigneeType?:    ProjectAssigneeType;
@@ -29,24 +28,16 @@ export interface Project {
   versions?:        Version[];
 }
 
-// Arguments
-// to prevent "Unrecognized field" error, limit property of Project
-export type CreateProjectArg = Replace<SelectProperty<Project, 
-    'projectTypeKey'    // required
-  | 'key' 
-  | 'lead' 
-  | 'name'
-  , 'description'       // optional
-  | 'assigneeType'>
-  , { lead: string }>;  // lead username
-export type UpdateProjectArg = Replace<SelectProperty<Project,
-  never                 // required
-  , 'key'               // optional
-  | 'lead'
-  | 'name'
-  | 'description'
-  | 'assigneeType'>
-  , { lead?: string }>; // lead username
+/* */
+const CreateProjectRequiredArgKeys = [ 'projectTypeKey', 'key', 'lead', 'name', 'description' ] as const;
+const CreateProjectOptionalArgKeys = [ 'assigneeType' ] as const;
+export type CreateProjectArg = Replace<SelectProperty<Project, typeof CreateProjectRequiredArgKeys[number], typeof CreateProjectOptionalArgKeys[number]>, { lead: string }>;
+
+const UpdateProjectRequiredArgKeys = [] as const;
+const UpdateProjectOptionalArgKeys = [ 'key', 'lead', 'name', 'description', 'assigneeType' ] as const;
+export type UpdateProjectArg = Replace<SelectProperty<Project, typeof UpdateProjectRequiredArgKeys[number], typeof UpdateProjectOptionalArgKeys[number]>, { lead: string }>;
+
+export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
 export type ExpandKey = SubKeyof<Project, 'description' | 'lead' | 'url' | 'projectKeys'>;
 
 // Responses
@@ -164,7 +155,7 @@ export class ProjectEP {
   async getVersionsPagenated( idOrKey: string, query?: VersionsQuery ) {
     const path = `/rest/api/2/project/${idOrKey}/version`;
     const res = await this.api.get( path, { query: query } );
-    return res as PagenatedListWrapper<Version>;
+    return res as PagenatedList<Version>;
   }
 
   // Get project versions
