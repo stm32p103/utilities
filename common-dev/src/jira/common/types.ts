@@ -45,3 +45,11 @@ export type ReplaceType<T, FROM, TO> = { [K in keyof T]: T[K] extends FROM ? TO 
 
 
 export type SelectProperty<T, Req extends keyof T, Opt extends keyof T = never> = Required<Pick<T,Req>> & Partial<Pick<T,Opt>>;
+
+export function getKeys( obj: { [key: string]: any } ) {
+  const arr: string[] = [];
+  for( let key in obj ) {
+    arr.push( key );
+  }
+  return arr;
+}

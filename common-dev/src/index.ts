@@ -1,5 +1,6 @@
 import { RestAPI } from './rest-api';
 import { Jira } from './jira';
+import { getKeys } from './jira/common/types';
 import { CREDENTIAL } from './credential';
 import { promises } from 'fs';
 
@@ -9,6 +10,7 @@ const jira = new Jira( api );
 
 async function test() {
   try {
+    await testUserAvatar();
     // const project = await jira.project.get( 'API2' );
     // const projects = (await jira.project.getAll()).map( p => p.id );
     // console.log( projects );
@@ -32,30 +34,6 @@ async function test() {
 }
 test();
 
-function getKeys( obj: { [key: string]: any } ) {
-  const arr: string[] = [];
-  for( let key in obj ) {
-    arr.push( key );
-  }
-  return arr;
-}
-
-async function testProjectType() {
-  console.log( '-----------------------------' );
-  console.log( 'getAll' );
-  const allTypes = await jira.projectType.getAll();
-  console.log( getKeys( allTypes[0] ) );
-
-  console.log( '-----------------------------' );
-  console.log( 'get' );
-  const getByType = await jira.projectType.get( 'business' );
-  console.log( getKeys( getByType ) );
-
-  console.log( '-----------------------------' );
-  const accessible = await jira.projectType.getAccessible( 'software' );
-  console.log( 'getAccessible' );
-  console.log( getKeys( accessible ) );
-}
 
 async function testComponent( projectId: string ) {
   const components = await jira.project.getComponents( projectId );  
@@ -126,44 +104,47 @@ async function testProject( key: string, username: string ) {
     // const dst = await jira.project.get( 'API' );
 }
 
+async function testSystemAvatar() {
+}
 
-async function avatar() {
+async function testUserAvatar() {
   const image = await promises.readFile( './src/credential/avatar.jpg' );
   console.log( '-----------------------------' );
   console.log( 'store' );
-  let storeAvatar = await jira.userAvatar.storeTemporaryAvater( 'jirauser', { buffer: image, filename: 'avatar.jpg', mime: 'image/jpeg' } );
+  let storeAvatar = await jira.user.storeTemporaryAvater( 'jirauser', { buffer: image, filename: 'avatar.jpg', mime: 'image/jpeg' } );
   let crop = {
     cropperOffsetX: 5,
     cropperOffsetY: 5,
     cropperWidth:   475,
     needsCropping:  true
   };
-  console.log( storeAvatar );
+  console.log( getKeys( storeAvatar ) );
 
   console.log( '-----------------------------' );
   console.log( 'create' );
-  let createAvatar = await jira.userAvatar.createFromTemporary( 'jirauser', crop );
-  console.log( createAvatar );
+  let createAvatar = await jira.user.createAvatarFromTemporary( 'jirauser', crop );
+  console.log( getKeys( createAvatar ) );
 
   console.log( '-----------------------------' );
   console.log( 'update' );
-  await jira.userAvatar.update( 'jirauser', createAvatar );
+  await jira.user.updateAvatar( 'jirauser', createAvatar );
 
   console.log( '-----------------------------' );
   console.log( 'get' );
-  let getAvatars = await jira.userAvatar.get( 'jirauser' );
-  console.log( getAvatars.custom );
+  let getAvatars = await jira.user.getAllAvatars( 'jirauser' );
+  console.log( getKeys( getAvatars.custom[0] ) );
+  console.log( getKeys( getAvatars.system[0] ) );
 
   console.log( '-----------------------------' );
   console.log( 'delete' );
-  await jira.userAvatar.delete( 'jirauser', getAvatars.custom[0].id );
+  await jira.user.deleteAvatar( 'jirauser', getAvatars.custom[0].id );
 }
 
 async function deleteAvatars() {
   console.log( '-----------------------------' );
   console.log( 'get' );
-  let avatars = await jira.userAvatar.get( 'jirauser' );
-  await Promise.all( avatars.custom.map( avatar => jira.userAvatar.delete( 'jirauser', avatar.id ) ) )
+  let avatars = await jira.user.getAllAvatars( 'jirauser' );
+  await Promise.all( avatars.custom.map( avatar => jira.user.deleteAvatar( 'jirauser', avatar.id ) ) )
   console.log( 'deleted');
 }
 

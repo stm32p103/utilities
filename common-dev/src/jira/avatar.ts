@@ -1,17 +1,9 @@
-import { RestAPI, RequestQuery } from '../rest-api'
-
-export type AvatarType = 'system' | 'custom';
-export type AvatarList = { [P in AvatarType]?: Avatar[] };
+import { RestAPI } from '../rest-api'
+import { SelectProperty } from './common/types';
+import { AvatarCreatorEP, AvatarImage, CreateFromTemporaryArg, UpdateAvatarRequiredArg } from './common/avatar-creator';
 
 export type AvatarSize = '48x48' | '32x32' | '24x24' | '16x16';
 export type AvatarUrls = { [P in AvatarSize]?: string };
-
-export type AvatarImageMIME = 'image/jpeg' | 'image/png' | 'image/bmp' | 'image/gif' | 'image/vnd.wap.wbmp';
-export interface AvatarImage {
-  filename: string;
-  mime: AvatarImageMIME;
-  buffer: Buffer;
-}
 
 export interface Avatar {
   id?:            string;
@@ -23,68 +15,108 @@ export interface Avatar {
   urls?:          AvatarUrls;
 }
 
-export interface AvaterCropping {
+export interface AvaterCroppingInstruction {
   cropperOffsetX: number;   // left
   cropperOffsetY: number;   // top
   cropperWidth:   number;   // radius of avatar
   needsCropping:  boolean;
+  url: string;
 }
 
-export interface AvatarSpecifier {
-  path: string;
-  query?: RequestQuery;
-}
+const StoreTemporaryAvaterResponseKeys = [
+  'cropperWidth',
+  'cropperOffsetX',
+  'cropperOffsetY',
+  'url',
+  'needsCropping'
+] as const;
+export type StoreTemporaryAvaterResponse = SelectProperty<AvaterCroppingInstruction, typeof StoreTemporaryAvaterResponseKeys[number]>;
+
+const CreateFromTemporaryResponseKeys = [
+  'id',
+  'owner',
+  'isSystemAvatar',
+  'isSelected',
+  'isDeletable',
+  'selected'
+] as const;
+export type CreateFromTemporaryAvaterResponse = SelectProperty<Avatar, typeof CreateFromTemporaryResponseKeys[number]>;
+
+const CustomAvatarKeys = [
+  'id',
+  'owner',
+  'isSystemAvatar',
+  'isSelected',
+  'isDeletable',
+  'urls',
+  'selected'
+] as const;
+const SystemAvatarKeys = [
+  'id',
+  'isSystemAvatar',
+  'isSelected',
+  'isDeletable',
+  'urls',
+  'selected'
+] as const;
+
+export type AvatarType = 'user' | 'project' | 'issuetype';
+export interface AvatarList { 
+  custom: SelectProperty<Avatar, typeof CustomAvatarKeys[number]>;
+  system: SelectProperty<Avatar, typeof SystemAvatarKeys[number]>;
+};
+export type SystemAvatarList = SelectProperty<AvatarList, 'system'>;
+export type AvatarGroup = keyof AvatarList;
 
 export class AvatarEP {
-  constructor( private api: RestAPI ) {}
-
-  async createFromTemporary( target: AvatarSpecifier, crop: AvaterCropping ) {
-    const res = await this.api.post( target.path, crop, { 
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-Atlassian-Token': 'no-check'
-      }, 
-      query: target?.query
-    } );
-
-    return res as Avatar;
+  private avatar: AvatarCreatorEP;
+  constructor( private api: RestAPI ) {
+    this.avatar = new AvatarCreatorEP( this.api );
   }
 
-  async storeTemporaryAvater( target: AvatarSpecifier, image: AvatarImage ) {
-    const res = await this.api.post( target.path, image.buffer, {
-      headers: {
-        'Content-Type': image.mime,
-        'X-Atlassian-Token': 'no-check'
-      },
-      query: {
-        filename: image.filename,
-        ...target.query
-      }
-    } );
-
-    return res as AvaterCropping;
+  /**
+   * Get all system avatars
+   * 
+   * GET /rest/api/2/avatar/{type}/system
+   * @param type Avatar type 
+   * @returns All system avatars of the given type.
+   */
+  async getAll( type: AvatarType ) {
+    const path = `/rest/api/2/avatar/${type}/system`;
+    const res = await this.api.get( path );
+    return res as SystemAvatarList;
+  }
+  
+  /**
+   * Create avatar from temporary
+   * 
+   * POST /rest/api/2/avatar/{type}/temporaryCrop
+   * @param type Avatar type 
+   * @returns Updated cropping instruction.
+   */
+  async createFromTemporary( type: AvatarType, crop: CreateFromTemporaryArg ) {
+    const path = `/rest/api/2/avatar/${type}/temporary`;
+    const res = await this.avatar.createFromTemporary( { path: path }, crop );
+    return res;
   }
 
-  async update( target: AvatarSpecifier, avatar: Avatar ) {
-    const res = await this.api.put( target.path, JSON.stringify( avatar ), {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Atlassian-Token': 'no-check'
-      },
-      query: target?.query
-    } );
+  /**
+   * Store temporary avatar
+   * 
+   * POST /rest/api/2/avatar/{type}/temporary
+   * @param type Avatar type
+   * @param image 
+   * 
+   */
+  async storeTemporaryAvater( type: AvatarType, image: AvatarImage ) {
+    const path = `/rest/api/2/avatar/${type}/temporary`;
+    const res = await this.avatar.storeTemporaryAvater( { path: path }, image );
+    return res;
   }
 
-  async delete( target: AvatarSpecifier ) {
-    await this.api.delete( target.path, {
-      query: target?.query
-    } );
-  }
-
-  async get( target: AvatarSpecifier ) {
-    const res = await this.api.get( target.path, {
-      query: target?.query
-    } );
-    return res as AvatarList;
+  async update( type: AvatarType, avatar: UpdateAvatarRequiredArg ) {
+    const path = `/rest/api/2/avatar/${type}`;
+    const res = await this.avatar.update( { path: path }, avatar );
+    return res;
   }
 }
