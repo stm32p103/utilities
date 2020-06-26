@@ -12,7 +12,7 @@ async function test() {
     // const project = await jira.project.get( 'API2' );
     // const projects = (await jira.project.getAll()).map( p => p.id );
     // console.log( projects );
-    await testProject( 'APIX', 'jadmin' );
+    // await testProjectType();
     // const update = await jira.project.update( project.id, {
     //   lead: 'jirauser'
     // } );
@@ -38,6 +38,23 @@ function getKeys( obj: { [key: string]: any } ) {
     arr.push( key );
   }
   return arr;
+}
+
+async function testProjectType() {
+  console.log( '-----------------------------' );
+  console.log( 'getAll' );
+  const allTypes = await jira.projectType.getAll();
+  console.log( getKeys( allTypes[0] ) );
+
+  console.log( '-----------------------------' );
+  console.log( 'get' );
+  const getByType = await jira.projectType.get( 'business' );
+  console.log( getKeys( getByType ) );
+
+  console.log( '-----------------------------' );
+  const accessible = await jira.projectType.getAccessible( 'software' );
+  console.log( 'getAccessible' );
+  console.log( getKeys( accessible ) );
 }
 
 async function testComponent( projectId: string ) {
@@ -170,21 +187,4 @@ async function projectCategory() {
   console.log( newCategory );
 
   await jira.projectCategory.delete( newCategory.id );
-}
-
-async function testProjectType() {
-  console.log( '-----------------------------' );
-  console.log( 'getAll' );
-  const allTypes = await jira.projectType.getAll();
-  console.log( allTypes );
-
-  console.log( '-----------------------------' );
-  console.log( 'get' );
-  const getByType = await jira.projectType.get( 'business' );
-  console.log( getByType );
-
-  console.log( '-----------------------------' );
-  const accessible = await jira.projectType.getAccessible( 'software' );
-  console.log( 'getAccessible' );
-  console.log( accessible );
 }

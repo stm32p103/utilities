@@ -32,7 +32,6 @@ export interface Project {
   versions?:        Version[];
 }
 
-/* */
 const CreateProjectRequiredArgKeys = [ 'projectTypeKey', 'key', 'lead', 'name' ] as const;
 const CreateProjectOptionalArgKeys = [ 'assigneeType', 'description' ] as const;
 export type CreateProjectArg = Replace<SelectProperty<Project, typeof CreateProjectRequiredArgKeys[number], typeof CreateProjectOptionalArgKeys[number]>, { lead: string }>;
