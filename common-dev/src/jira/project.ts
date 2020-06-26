@@ -3,7 +3,7 @@ import { User } from './user';
 import { Expandable, SubKeyof, Replace, SelectProperty, PagenatedList } from './common/types';
 import { AvatarUrls } from './avatar';
 import { Component } from './component';
-import { ConcreteProjectCategory } from './project-category';
+import { ProjectCategory } from './project-category';
 import { Version } from './version';
 
 export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
@@ -23,7 +23,7 @@ export interface Project {
   key?:             string;
   lead?:            User;
   name?:            string;
-  projectCategory?: ConcreteProjectCategory;
+  projectCategory?: ProjectCategory;
   projectKeys?:     string[];
   projectTypeKey?:  string;
   roles?:           any // Roles;

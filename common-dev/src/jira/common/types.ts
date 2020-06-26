@@ -32,8 +32,6 @@ export type RequiresOne<T, U = { [ K in keyof T ]: Pick<T, K> }> = Partial<T> & 
 // 指定したプロパティの内1つは必須
 export type RequiresOneKey<T, K extends keyof T> = Omit<T,K> & RequiresOne<Pick<T,K>>;
 
-// 指定したプロパティの内1つは必須、他は不要
-
 // キーの一部
 export type SubKeyof<T, K extends keyof T> = keyof Pick<T,K>;
 

@@ -62,8 +62,8 @@ const SystemAvatarKeys = [
 
 export type AvatarType = 'user' | 'project' | 'issuetype';
 export interface AvatarList { 
-  custom: SelectProperty<Avatar, typeof CustomAvatarKeys[number]>;
-  system: SelectProperty<Avatar, typeof SystemAvatarKeys[number]>;
+  custom: SelectProperty<Avatar, typeof CustomAvatarKeys[number]>[];
+  system: SelectProperty<Avatar, typeof SystemAvatarKeys[number]>[];
 };
 export type SystemAvatarList = SelectProperty<AvatarList, 'system'>;
 export type AvatarGroup = keyof AvatarList;
