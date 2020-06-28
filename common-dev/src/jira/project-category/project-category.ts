@@ -1,5 +1,5 @@
-import { RestAPI } from '../rest-api'
-import { SelectProperty } from './common/types';
+import { RestAPI } from '../../rest-api'
+import { SelectProperty } from '../common/types';
 
 /**
  * Jira REST API: Project Category
@@ -16,15 +16,7 @@ const CreateProjectCategoryRequiredArgKeys = [
   'description'
 ] as const;
 export type CreateProjectCategoryRequiredArg = SelectProperty<ProjectCategory, typeof CreateProjectCategoryRequiredArgKeys[number]>;
-
-const UpdateProjectCategoryRequiredArgKeys = [
-  'id',
-] as const;
-const UpdateProjectCategoryOptionalArgKeys = [
-  'name',
-  'description'
-] as const;
-export type UpdateProjectCategoryRequiredArg = SelectProperty<ProjectCategory, typeof UpdateProjectCategoryRequiredArgKeys[number], typeof UpdateProjectCategoryOptionalArgKeys[number]>;
+export type UpdateProjectCategoryRequiredArg = Partial<CreateProjectCategoryRequiredArg>;
 
 const ProjectCategoryResponseKeys = [ 'self', 'id', 'description', 'name' ] as const;
 export type ProjectCategoryResponse = SelectProperty<ProjectCategory, typeof ProjectCategoryResponseKeys[number]>;
@@ -86,11 +78,13 @@ export class ProjectCategoryEP {
 
   /**
    * Update project category
+   * 
    * PUT /rest/api/2/projectCategory/{id}
+   * @param id Project category id.
    * @param projectCategory Fields to update project category.
    */
-  async update( projectCategory: UpdateProjectCategoryRequiredArg ) {
-    const path = `/rest/api/2/projectCategory/${projectCategory.id}`;
+  async update( id: string, projectCategory: UpdateProjectCategoryRequiredArg ) {
+    const path = `/rest/api/2/projectCategory/${id}`;
     const res = await this.api.put( path, projectCategory );
     return res as ProjectCategoryResponse;
   }
