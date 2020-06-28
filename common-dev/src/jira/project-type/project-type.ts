@@ -1,5 +1,5 @@
-import { RestAPI } from '../rest-api'
-import { SelectProperty } from './common/types';
+import { RestAPI } from '../../rest-api'
+import { SelectProperty } from '../common/types';
 
 /**
  * Jira REST API: Project Type
