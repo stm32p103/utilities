@@ -2,7 +2,7 @@ import { RestAPI } from '../rest-api/rest-api'
 import { IssueEP } from './issue';
 import { AttachmentEP } from './attachment/attachment';
 import { AvatarEP } from './avatar';
-import { ComponentEP } from './component';
+import { ComponentEP } from './component/component';
 import { ProjectEP } from './project';
 import { ProjectTypeEP } from './project-type';
 import { ProjectCategoryEP } from './project-category';

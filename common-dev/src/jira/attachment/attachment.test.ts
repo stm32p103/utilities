@@ -1,7 +1,7 @@
-import { RestAPI } from '../../../rest-api'
-import { CREDENTIAL, HOST, FILENAME, ISSUEKEY } from '../../../../test/sample'
-import { AttachmentEP } from '../attachment';
-import { IssueEP } from '../../issue';
+import { RestAPI } from '../../rest-api'
+import { CREDENTIAL, HOST, FILENAME, ISSUEKEY } from '../../../test/sample'
+import { AttachmentEP } from './attachment';
+import { IssueEP } from '../issue';
 import { promises } from 'fs';
 
 const api = new RestAPI( new URL( HOST ) );
@@ -37,9 +37,10 @@ test('meta', async () => {
 } );
 
 test('remove', async () => {
+  await attachmentEP.remove( id );
   try {
-    await attachmentEP.remove( id );
+    await attachmentEP.get( id );
   } catch (e) {
-    expect(e).toMatch('error');
+    expect(e.response.status).toBe(404);
   }
 } );

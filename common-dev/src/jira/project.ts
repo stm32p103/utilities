@@ -2,7 +2,7 @@ import { RestAPI } from '../rest-api'
 import { User } from './user';
 import { Expandable, RequiresKey, Replace, SelectProperty, PagenatedList } from './common/types';
 import { AvatarUrls } from './avatar';
-import { Component } from './component';
+import { Component } from './component/component';
 import { ProjectCategory } from './project-category';
 import { Version } from './version';
 

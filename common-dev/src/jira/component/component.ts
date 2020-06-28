@@ -1,6 +1,6 @@
-import { RestAPI } from '../rest-api'
-import { SelectProperty, ReplaceType } from './common/types';
-import { User, UserSpecifier } from './user';
+import { RestAPI } from '../../rest-api'
+import { SelectProperty, ReplaceType, RequiresKey, RequiresOne } from '../common/types';
+import { User, UserSpecifier } from '../user';
 
 /** 
  * TODO
@@ -19,19 +19,19 @@ export type AssigneeType = 'COMPONENT_LEAD' | 'PROJECT_DEFAULT' | 'PROJECT_LEAD'
  */
 export interface Component {
   archived?:           boolean;
-  assignee?:           User;
+  assignee?:           User;          // response only
   assigneeType?:       AssigneeType;
   description?:        string;
   id?:                 string;
-  isAssigneeTypeValid: boolean;
+  isAssigneeTypeValid: boolean;       // response only
   lead?:               User;
-  leadUserName?:       string;
+  leadUserName?:       string;        // create, update only
   name?:               string;
   project?:            string;
-  projectId?:          number;
-  realAssignee?:       User;
-  realAssigneeType?:   AssigneeType;
-  self?:               string;
+  projectId?:          number;        // create, update only
+  realAssignee?:       User;          // response only
+  realAssigneeType?:   AssigneeType;  // response only
+  self?:               string;        // response only
 }
 
 export interface ComponentRelatedIssueCounts {
@@ -41,14 +41,21 @@ export interface ComponentRelatedIssueCounts {
 
 const CreateComponentRequiredArgKeys = [
   'name',
-  'project'       // Project ID
+  'project',
+  'projectId'
 ] as const;
 const CreateComponentOptionalArgKeys = [ 
   'assigneeType',
   'description',
-  'lead',         // User { id, key, name }
+  'lead',
+  'leadUserName',
 ] as const;
-export type CreateComponentArg = ReplaceType<SelectProperty<Component, typeof CreateComponentRequiredArgKeys[number], typeof CreateComponentOptionalArgKeys[number]>, User, UserSpecifier>;
+export type CreateComponentArg = RequiresOne<
+    ReplaceType<SelectProperty<Component, 
+      typeof CreateComponentRequiredArgKeys[number],
+      typeof CreateComponentOptionalArgKeys[number]>,
+    User, UserSpecifier>,
+  'project' | 'projectId'> // at least specify project or projectId
 
 const  CreateComponentResponseKeys = [
   'self',        
@@ -65,7 +72,7 @@ const  CreateComponentResponseKeys = [
   'projectId',
   'archived'
 ] as const;
-export type CreateComponentResponse = SelectProperty<Component, typeof CreateComponentResponseKeys[number]>;
+export type CreateComponentResponse = RequiresKey<Component, typeof CreateComponentResponseKeys[number]>;
 export type GetComponentResponse = CreateComponentResponse;
 export type UpdateComponentResponse = CreateComponentResponse;
 
