@@ -1,5 +1,5 @@
-import { RestAPI } from '../rest-api'
-import { PagenatedList } from './common/types';
+import { RestAPI } from '../../rest-api'
+import { PagenatedList } from '../common/types';
 
 /**
  * Jira REST API: Custom Field
