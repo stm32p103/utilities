@@ -1,4 +1,5 @@
 import { RestAPI } from '../rest-api'
+import { Attachment } from './attachment';
 import { MultipartFormPoster } from './common/multipart-form-poster'
 
 export type FieldName = 'renderedFields' | 'names' | 'schema' | 'operations' | 'editmeta' | 'changelog' | 'versionedRepresentations';
@@ -40,6 +41,6 @@ export class IssueEP {
     const poster = new MultipartFormPoster( this.api );
     poster.appendFile( 'file', buffer, filename );
     const res = await poster.post( path );
-    return res;
+    return res as Attachment[];
   }
 }

@@ -1,12 +1,13 @@
 import { RestAPI } from '../rest-api/rest-api'
 import { IssueEP } from './issue';
-import { AttachmentEP } from './attachment';
+import { AttachmentEP } from './attachment/attachment';
 import { AvatarEP } from './avatar';
 import { ComponentEP } from './component';
 import { ProjectEP } from './project';
 import { ProjectTypeEP } from './project-type';
 import { ProjectCategoryEP } from './project-category';
 import { UserEP } from './user';
+import { VersionEP } from './version';
 
 export class Jira {
   public readonly avatar: AvatarEP;
@@ -17,6 +18,7 @@ export class Jira {
   public readonly projectCategory: ProjectCategoryEP;
   public readonly projectType: ProjectTypeEP;
   public readonly user: UserEP;
+  public readonly version: VersionEP;
 
   constructor( private api: RestAPI ) {
     this.avatar = new AvatarEP( this.api );
@@ -27,5 +29,6 @@ export class Jira {
     this.projectCategory = new ProjectCategoryEP( this.api );
     this.projectType = new ProjectTypeEP( this.api );
     this.user = new UserEP( this.api );
+    this.version = new VersionEP( this.api );
   }
 }

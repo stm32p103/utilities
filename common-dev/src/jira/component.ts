@@ -2,6 +2,13 @@ import { RestAPI } from '../rest-api'
 import { SelectProperty, ReplaceType } from './common/types';
 import { User, UserSpecifier } from './user';
 
+/** 
+ * TODO
+ * Expand: dot notation に対応するため、stringにも対応する。
+ * Arg: 無視される引数、エラーとなる引数を除外する。
+ * Response: 必ず含まれるもの以外はOptionalにする。
+ */
+
 /**
  * Options for of "Default assignee".
  */

@@ -1,6 +1,6 @@
 import { RestAPI } from '../rest-api'
 import { User } from './user';
-import { Expandable, SubKeyof, Replace, SelectProperty, PagenatedList } from './common/types';
+import { Expandable, RequiresKey, Replace, SelectProperty, PagenatedList } from './common/types';
 import { AvatarUrls } from './avatar';
 import { Component } from './component';
 import { ProjectCategory } from './project-category';
@@ -55,7 +55,7 @@ const GetProjectResponseKeys = [
   'avatarUrls',   'projectTypeKey',
   'archived'
 ] as const;
-export type GetProjectResponse = Expandable<SelectProperty<Project, typeof GetProjectResponseKeys[number]>>;
+export type GetProjectResponse = Expandable<RequiresKey<Project, typeof GetProjectResponseKeys[number]>>;
 export type UpdateProjectResponse = GetProjectResponse;
 
 const CreateProjectResponseKeys = [ 'self', 'id', 'key' ] as const;
@@ -69,7 +69,7 @@ const GetAllProjectResponseKeys = [
   'avatarUrls',
   'projectTypeKey'
 ] as const;
-export type GetAllProjectResponse = Expandable<SelectProperty<Project, typeof GetAllProjectResponseKeys[number]>>[];
+export type GetAllProjectResponse = Expandable<RequiresKey<Project, typeof GetAllProjectResponseKeys[number]>>[];
 
 export interface VersionsQuery {
   startAt?: number;
@@ -209,7 +209,7 @@ export class ProjectEP {
   async updateProjectType( idOrKey: string, projectTypeKey: string ) {
     const path = `/rest/api/2/project/${idOrKey}/type/${projectTypeKey}`;
     const res = await this.api.put( path );
-    return res as UpdateProjectResponse;
+    return res as Project;
   }
 
   /**

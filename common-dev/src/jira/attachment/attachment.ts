@@ -1,5 +1,5 @@
-import { RestAPI } from '../rest-api'
-import { User } from './user';
+import { RestAPI } from '../../rest-api'
+import { User } from '../user';
 
 export interface AttachmentMeta {
   enabled: boolean;
@@ -7,12 +7,13 @@ export interface AttachmentMeta {
 }
 
 export interface Attachment {
+  id?:         string;
   author?:     User;
   content?:    string;
   created?:    string;
   filename?:   string;
   mimeType?:   string;
-//  properties?: Properties;
+  properties?: any;     // TODO
   self?:       string;
   size:        number;
   thumbnail?:  string;

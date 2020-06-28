@@ -10,22 +10,52 @@ const jira = new Jira( api );
 
 async function test() {
   try {
-    await projectCategory( jira );
-    // const project = await jira.project.get( 'API2' );
-    // const projects = (await jira.project.getAll()).map( p => p.id );
-    // console.log( projects );
-    // await testProjectType();
-    // const update = await jira.project.update( project.id, {
-    //   lead: 'jirauser'
-    // } );
-    // const statuses = await jira.project.statuses( project.id );
-    // console.log( statuses );
-    // const updateProjectType = await jira.project.updateProjectType( project.id, 'business' );
-    // console.log( updateProjectType );
-    // const versions = await jira.project.getVersionsPagenated( project.id, { orderBy: "name" } );
-    // console.log( versions );
-    // await testComponent(project.key);
-  } catch( err ) {
+    console.log( '-----------------------------' );
+    console.log( 'delete all' );
+    const versions = await jira.project.getVersions( 'API2' );
+    await Promise.all( versions.map( version => jira.version.delete( version.id ) ) );
+    // await jira.version.create( { project: 'API2', name: 'VERSIONs', expand: 'aa' } );
+    console.log( '-----------------------------' );
+    console.log( 'create' );
+    const created = await jira.version.create( { project: 'API2', name: 'Created aaa' } );
+    console.log( getKeys( created ) );
+    console.log( created );
+
+    console.log( '-----------------------------' );
+    console.log( 'get' );
+    const version = await jira.version.get( created.id );
+    console.log( getKeys( version ) );
+    console.log( version );
+      
+    console.log( '-----------------------------' ); 
+    console.log( 'update' );
+    const update = await jira.version.update( created.id, { name: 'aa', startDate: '2020-06-05', archived: 'true', released: 'true' } );
+    console.log( getKeys( update ) );
+    console.log( update );
+
+    console.log( '-----------------------------' );
+    console.log( 'createOrUpdateRemoteVersionLink' );
+    const link = await jira.version.createOrUpdateRemoteVersionLink( created.id );
+    console.log( link );
+
+    console.log( '-----------------------------' );
+    console.log( 'getRemoteVersionLinks' );
+    const links = await jira.version.getRemoteVersionLinks( created.id );
+    console.log( links );
+
+    console.log( '-----------------------------' );
+    console.log( 'get' );
+    const version2 = await jira.version.get( created.id, [ "remotelinks", "project" ] );
+    console.log( getKeys( version2) );
+    console.log( version2 );
+
+    console.log( '-----------------------------' );
+    console.log( 'delete' );
+    const deleted = await jira.version.delete( created.id );
+    console.log( deleted );
+
+
+  } catch( err ) { 
     if( err.response ) {
       console.log( err.response.status );
       console.log( err.response.data );
