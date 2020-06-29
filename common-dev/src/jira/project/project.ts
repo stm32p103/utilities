@@ -1,10 +1,10 @@
-import { RestAPI } from '../rest-api'
-import { User } from './user';
-import { Expandable, RequiresKey, Replace, SelectProperty, PagenatedList } from './common/types';
-import { AvatarUrls } from './avatar';
-import { Component } from './component/component';
-import { ProjectCategory } from './project-category';
-import { Version } from './version';
+import { RestAPI } from '../../rest-api'
+import { User } from '../user';
+import { Expandable, RequiresKey, Replace, SelectProperty, PagenatedList } from '../common/types';
+import { AvatarUrls } from '../avatar';
+import { Component } from '../component/component';
+import { ProjectCategory } from '../project-category';
+import { Version } from '../version';
 
 export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
 /**
@@ -59,7 +59,7 @@ export type GetProjectResponse = Expandable<RequiresKey<Project, typeof GetProje
 export type UpdateProjectResponse = GetProjectResponse;
 
 const CreateProjectResponseKeys = [ 'self', 'id', 'key' ] as const;
-export type CreateProjectResponse = SelectProperty<Project, typeof CreateProjectResponseKeys[number]>;
+export type CreateProjectResponse = RequiresKey<Project, typeof CreateProjectResponseKeys[number]>;
 
 const GetAllProjectResponseKeys = [
   'self',
