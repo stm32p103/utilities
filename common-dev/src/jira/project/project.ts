@@ -4,7 +4,7 @@ import { Expandable, RequiresKey, Replace, SelectProperty, PagenatedList } from 
 import { AvatarUrls } from '../avatar';
 import { Component } from '../component/component';
 import { ProjectCategory } from '../project-category';
-import { Version } from '../version';
+import { Version } from '../version/version';
 
 export type ProjectAssigneeType = 'PROJECT_LEAD' | 'UNASSIGNED';
 /**
@@ -40,10 +40,6 @@ const UpdateProjectRequiredArgKeys = [] as const;
 const UpdateProjectOptionalArgKeys = [ 'key', 'lead', 'name', 'description', 'assigneeType' ] as const;
 export type UpdateProjectArg = Replace<SelectProperty<Project, typeof UpdateProjectRequiredArgKeys[number], typeof UpdateProjectOptionalArgKeys[number]>, { lead: string }>;
 
-
-const ExpandKeyKeys = [ 'description', 'lead', 'url', 'projectKeys' ] as const;
-export type ExpandKey = typeof ExpandKeyKeys[number];
-
 // Responses
 const GetProjectResponseKeys = [
   'self',
@@ -69,7 +65,7 @@ const GetAllProjectResponseKeys = [
   'avatarUrls',
   'projectTypeKey'
 ] as const;
-export type GetAllProjectResponse = Expandable<RequiresKey<Project, typeof GetAllProjectResponseKeys[number]>>[];
+export type GetAllProjectResponse = Expandable<RequiresKey<Project, typeof GetAllProjectResponseKeys[number]>>;
 
 export interface VersionsQuery {
   startAt?: number;
@@ -102,10 +98,10 @@ export class ProjectEP {
    * @param expand Fields to retrieve.
    * @returns Retrieved projects.
    */
-  async getAll( expand?: ExpandKey[] ) {
+  async getAll( expand?: string[] ) {
     const path = `/rest/api/2/project`;
     const res = await this.api.get( path, { query: { expand: expand } } );
-    return res as GetAllProjectResponse;
+    return res as GetAllProjectResponse[];
   }
 
   /**
@@ -116,7 +112,7 @@ export class ProjectEP {
    * @param expand Fields to retrieve.
    * @returns Retrieved project.
    */
-  async get( idOrKey: string, expand?: ExpandKey[] ) {
+  async get( idOrKey: string, expand?: string[] ) {
     const path = `/rest/api/2/project/${idOrKey}`;
     const res = await this.api.get( path, { query: { expand: expand } } );
     return res as GetProjectResponse;
@@ -131,7 +127,7 @@ export class ProjectEP {
    * @param expand Fields to retrieve.
    * @returns updated project.
    */
-  async update( idOrKey: string, project: UpdateProjectArg, expand?: ExpandKey[] ) {
+  async update( idOrKey: string, project: UpdateProjectArg, expand?: string[] ) {
     const path = `/rest/api/2/project/${idOrKey}`;
     const res = await this.api.put( path, project, { query: { expand: expand } } );
     return res as UpdateProjectResponse;
@@ -232,7 +228,7 @@ export class ProjectEP {
    * @param idOrKey Project id or key.
    * @param query Search criteria, sort order etc.
    */
-  async getVersions( idOrKey: string, expand?: ExpandKey[] ) {
+  async getVersions( idOrKey: string, expand?: string[] ) {
     const path = `/rest/api/2/project/${idOrKey}/versions`;
     const res = await this.api.get( path, { query: { expand: expand } } );
     return res as Version[];

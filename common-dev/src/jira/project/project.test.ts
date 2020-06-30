@@ -1,4 +1,5 @@
 import { RestAPI } from '../../rest-api'
+import { getKeys } from '../common/types';
 import { CREDENTIAL, HOST } from '../../../test/sample'
 import { Jira } from '..';
 import { CreateProjectArg, UpdateProjectArg } from './project';
@@ -10,7 +11,7 @@ const jira = new Jira( api );
 
 let projectId: string = '';
 const createArg: CreateProjectArg = {
-  key: 'UTC',
+  key: 'TSTC',
   lead: 'jadmin',
   projectTypeKey: 'software',
   assigneeType: 'UNASSIGNED',
@@ -19,7 +20,7 @@ const createArg: CreateProjectArg = {
 };
 
 const updateArg: UpdateProjectArg = {
-  key: 'UTU',
+  key: 'TSTU',
   lead: 'jirauser',
   assigneeType: 'PROJECT_LEAD',
   name: 'New Project Updated',
@@ -30,13 +31,14 @@ const updateArg: UpdateProjectArg = {
 test('create', async () => {
   const project = await jira.project.create( createArg );
   projectId = String( project.id );
-  console.log( project );  
+  console.log( getKeys( project ) );
   expect( project.key ).toBe( createArg.key );
 } );
 
 test('get', async () => {
   const project = await jira.project.get( projectId );
-  // console.log( category );
+  console.log( getKeys( project ) );
+
   expect( project.id ).toBe( projectId );
   expect( project.key ).toBe( project.key );
   expect( project.name ).toBe( project.name );
@@ -44,11 +46,12 @@ test('get', async () => {
 } );
 
 test('update', async () => {
-  const category = await jira.project.update( projectId, updateArg );
-  // console.log( category );
-  expect( category.id ).toBe( projectId );
-  expect( category.name ).toBe( updateArg.name );
-  expect( category.description ).toBe( updateArg.description );
+  const project = await jira.project.update( projectId, updateArg );
+  console.log( getKeys( project ) );
+
+  expect( project.id ).toBe( projectId );
+  expect( project.name ).toBe( updateArg.name );
+  expect( project.description ).toBe( updateArg.description );
 } );
 
 test('delete', async () => {

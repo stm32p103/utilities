@@ -1,17 +1,17 @@
-import { RestAPI } from '../rest-api'
-import { SelectProperty } from './common/types';
+import { RestAPI } from '../../rest-api'
+import { SelectProperty, RequiresKey } from '../common/types';
 
 export interface Version {
   archived?:            boolean;
   description?:         string;
-  expand?:              string;
+  expand?:              string;   // not used?
   id?:                  string;
   moveUnfixedIssuesTo?: string;
   name?:                string;
   operations?:          SimpleLink[];   // expand
-  overdue?:             boolean;
-  project?:             string;
-  projectId?:           number;
+  overdue?:             boolean;  // readonly
+  project?:             string;   // create only
+  projectId?:           number;   // readonly
   released?:            boolean;
   remotelinks?:         RemoteEntityLink[];   // expand
   self?:                string;
@@ -20,16 +20,6 @@ export interface Version {
   releaseDate?:         string; // not described in schema
   startDate?:           string; // not described in schema
 }
-
-const ExpandGetVersionKeys = [
-  'remotelinks',
-  'operations',
-  'project',
-  'projedtId',
-  'moveUnfixedIssuesTo',
-  'startDate'
-] as const;
-export type ExpandGetVersion = typeof ExpandGetVersionKeys[number];
 
 export interface SimpleLink {
   href?:       string;
@@ -53,8 +43,8 @@ const CreateVersionRequriedArgKeys = [
 ] as const;
 const CreateVersionOptionalArgKeys = [
   'description',
-  'userReleaseDate',
-  'userStartDate'
+  'releaseDate',
+  'startDate'
 ] as const;
 export type CreateVersionArg = SelectProperty<Version, typeof CreateVersionRequriedArgKeys[number], typeof CreateVersionOptionalArgKeys[number]>;
 
@@ -62,16 +52,15 @@ export type CreateVersionArg = SelectProperty<Version, typeof CreateVersionRequr
 const UpdateVersionRequriedArgKeys = [
 ] as const;
 const UpdateVersionOptionalArgKeys = [
-  'project',
   'name',
   'description',
-  'userReleaseDate',
-  'userStartDate'
+  'releaseDate',
+  'startDate'
 ] as const;
 export type UpdateVersionArg = SelectProperty<Version, typeof UpdateVersionRequriedArgKeys[number], typeof UpdateVersionOptionalArgKeys[number]>;
 
 const VersionResponseKeys = [ 'self', 'id', 'name', 'archived', 'released', 'projectId' ] as const;
-export type VersionResponse = SelectProperty<Version, typeof VersionResponseKeys[number]>;
+export type VersionResponse = RequiresKey<Version, typeof VersionResponseKeys[number]>;
 
 export type DeleteVersionOption = {
   moveFixIssuesTo?: string        // version id
@@ -99,18 +88,19 @@ export class VersionEP {
    * GET /rest/api/2/version/{id}
    * @param project 
    */
-  async get( id: string, expand?: ExpandGetVersion[] ) {
+  async get( id: string, expand?: string[] ) {
     const path = `/rest/api/2/version/${id}`;
     const res = await this.api.get( path, { query: { expand: expand } });
     return res as VersionResponse;
   }
+
   /**
    * Update version
    * 
    * PUT /rest/api/2/version/{id}
    * @param version 
    */
-  async update( id: string, version: Partial<Version> ) {
+  async update( id: string, version: UpdateVersionArg ) {
     const path = `/rest/api/2/version/${id}`;
     const res = await this.api.put( path, version );
     return res as VersionResponse;

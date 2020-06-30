@@ -9,7 +9,7 @@ import { ProjectEP } from './project/project';
 import { ProjectTypeEP } from './project-type';
 import { ProjectCategoryEP } from './project-category';
 import { UserEP } from './user';
-import { VersionEP } from './version';
+import { VersionEP } from './version/version';
 
 export class Jira {
   public readonly avatar: AvatarEP;
