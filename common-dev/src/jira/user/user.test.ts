@@ -54,7 +54,7 @@ test('find user', async () => {
 } );
 
 test('find user with browse permission', async () => {
-  const users = await jira.user.findUsersWithBrowsePermission( { username: keyword, issueKey: 'API-1' } );
+  const users = await jira.user.findUsersWithBrowsePermission( { username: keyword, issueKey: `${PROJECTKEYS[0]}-1` } );
   // console.log( users[0] );
   checkKeyExists( userKey, users );
 } );
