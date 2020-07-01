@@ -39,5 +39,10 @@ test('find user for picker', async () => {
 
 test('find user', async () => {
   const users = await jira.user.findUsers( { username: 'adm' } );
-  console.log( getKeys( users[0] ) );  
+  console.log( users[0] ); 
+} );
+
+test('find user with browse permission', async () => {
+  const users = await jira.user.findUsersWithBrowsePermission( { username: 'adm', issueKey: 'API-1' } );
+  console.log( users[0] ); 
 } );

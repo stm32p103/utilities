@@ -41,8 +41,10 @@ export type Replace<T, R> = Omit<T, keyof R> & R;
 // 型を置き換える
 export type ReplaceType<T, FROM, TO> = { [K in keyof T]: T[K] extends FROM ? TO : T[K] };
 
-
 export type SelectProperty<T, Req extends keyof T, Opt extends keyof T = never> = Required<Pick<T,Req>> & Partial<Pick<T,Opt>>;
+
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+export type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
 
 export function getKeys( obj: { [key: string]: any } ) {
   const arr: string[] = [];

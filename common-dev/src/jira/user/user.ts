@@ -1,5 +1,5 @@
 import { RestAPI } from '../../rest-api'
-import { SimpleListWrapper, RequiresOne, RequiresKey } from '../common/types';
+import { SimpleListWrapper, RequiresOne, RequiresKey, XOR } from '../common/types';
 import { AvatarCreatorEP, AvatarImage, CreateFromTemporaryArg, UpdateAvatarRequiredArg } from '../common/avatar-creator';
 
 import { AvatarUrls, AvatarList } from '../avatar';
@@ -54,12 +54,6 @@ type FindBulkAssignableUserQuery = AssignableUserQueryCommon & {
   projectKeys?: string[];
 }
 
-type FindUsersWithAllPermissionsQuery = AssignableUserQueryCommon & {
-  issueKey?: string;
-  projectKey?: string;
-  permissions: string[];  // https://docs.atlassian.com/DAC/javadoc/jira/6.0/reference/com/atlassian/jira/security/Permissions.Permission.html
-}
-
 type FindUsersForPickerQuery = {
   query: string; // username or email
   maxResults?: number;
@@ -70,6 +64,11 @@ type FindUsersForPickerQuery = {
 type FindUsersQuery = AssignableUserQueryCommon & {
   includeActive?: boolean;
   includeInactive?: boolean;
+}
+
+type FindUsersWithBrowsePermissionQuery = AssignableUserQueryCommon & XOR<{issueKey:string}, {projectKey: string}>;
+type FindUsersWithAllPermissionsQuery = FindUsersWithBrowsePermissionQuery & {
+  permissions: string[];  // https://docs.atlassian.com/DAC/javadoc/jira/6.0/reference/com/atlassian/jira/security/Permissions.Permission.html
 }
 
 type GetUserQuery = {
@@ -108,7 +107,6 @@ const FindBulkAssignableKeys = [
 type FindBulkAssignableResponse = RequiresKey<User, typeof FindBulkAssignableKeys[number]>;
 type FindAssignableResponse = FindBulkAssignableResponse;
 type FindUsersWithAllPermissionsResponse = FindBulkAssignableResponse;
-type FindUsersForPickerResponse = FindBulkAssignableResponse;
 type FindUsersResponse = FindBulkAssignableResponse;
 
 export class UserEP {
@@ -227,20 +225,57 @@ export class UserEP {
     return res as AvatarList;
   }
 
+  /**
+   * Find users with all permissions
+   * 
+   * GET /rest/api/2/user/permission/search
+   * @param query 
+   * @returns a list of active users that match the search string and have all specified permissions for the project or issue.
+   * This resource can be accessed by users with ADMINISTER_PROJECT permission for the project or global ADMIN or SYSADMIN rights.
+   */
   async findUsersWithAllPermissions( query: FindUsersWithAllPermissionsQuery ) {
     const path = `/rest/api/2/user/permission/search`;
     const res = await this.api.get( path, { query: query } );
     return res as FindUsersWithAllPermissionsResponse[];
   }
 
+  /**
+   * Find users for picker
+   * 
+   * GET /rest/api/2/user/picker
+   * @param query 
+   * @returns a list of users matching query with highlighting.
+   */
   async findUsersForPicker( query: FindUsersForPickerQuery ) {
     const path = `/rest/api/2/user/picker`;
     const res = await this.api.get( path, { query: query } );
     return res as UserPickerResults;
   }
 
+  /**
+   * Find users
+   * 
+   * GET /rest/api/2/user/viewissue/search
+   * @param query
+   * @returns a list of users that match the search string. This resource cannot be accessed anonymously.
+   */
   async findUsers( query: FindUsersQuery ) {
     const path = `/rest/api/2/user/search`;
+    const res = await this.api.get( path, { query: query } );
+    return res as FindUsersResponse[];
+  }
+  
+  /**
+   * Find users with browse permission
+   * 
+   * GET /rest/api/2/user/viewissue/search
+   * @param query
+   * @returns a list of active users that match the search string.
+   * This resource cannot be accessed anonymously and requires the Browse Users global permission.
+   * Given an issue key this resource will provide a list of users that match the search string and have the browse issue permission for the issue provided.
+   */
+  async findUsersWithBrowsePermission( query: FindUsersWithBrowsePermissionQuery ) {
+    const path = `/rest/api/2/user/viewissue/search`;
     const res = await this.api.get( path, { query: query } );
     return res as FindUsersResponse[];
   }
