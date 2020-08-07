@@ -1,6 +1,10 @@
 {
-  "name": "dom-event-service",
+  "name": "@angular-lib/dom-event-service",
+  "description": "DOM Event Services",
   "version": "0.0.1",
+  "license": "MIT",
+  "author": "stm32p103",
+  "keywords": [ "Paste", "Resize", "Angular" ],
   "peerDependencies": {
     "@angular/common": "^10.0.6",
     "@angular/core": "^10.0.6"
