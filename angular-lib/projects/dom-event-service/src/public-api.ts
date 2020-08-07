@@ -1,7 +1,2 @@
-/*
- * Public API Surface of dom-event-service
- */
-
-export * from './lib/dom-event-service.service';
-export * from './lib/dom-event-service.component';
-export * from './lib/dom-event-service.module';
+export * from './lib/resize.service';
+export * from './lib/paste.service';
