@@ -6,5 +6,12 @@
 */
 {
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./projects/dom-event-service/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/dom-event-service/tsconfig.spec.json"
+    }
+]
 }
