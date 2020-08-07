@@ -12,6 +12,12 @@
     },
     {
       "path": "./projects/dom-event-service/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/libtest/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/libtest/tsconfig.spec.json"
     }
 ]
 }
