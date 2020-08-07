@@ -1,6 +1,14 @@
 {
-  "name": "dom-event",
-  "version": "0.0.1",
+  "name": "@angular-lib/dom-event",
+  "description": "DOM Event Services",
+  "version": "0.0.0",
+  "keywords": [ "Paste", "Resize" ],
+  "license": "MIT",
+  "author": "stm32p103",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/pkg.git"
+  },
   "peerDependencies": {
     "@angular/common": "^9.1.9",
     "@angular/core": "^9.1.9"
