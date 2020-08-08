@@ -1,9 +1,13 @@
-import { Observable, fromEvent, throwError, merge, empty, never } from 'rxjs';
-import { map, tap, take, flatMap, observeOn, takeUntil, share } from 'rxjs/operators';
+import { throwError, merge, EMPTY, NEVER } from 'rxjs';
+import { map, flatMap, takeUntil } from 'rxjs/operators';
 import { ObservableFileReader } from './observable-file-reader';
 
-
-export const readAsArrayBuffer = ( file: File, maxSize: number ) => {
+/**
+ * 指定したFileを読み込みArrayBufferに格納する。
+ * @param file 読み出すファイル。
+ * @param maxSize 1回の読出し当たりの最大バイト数。
+ */
+export function readAsArrayBuffer( file: File, maxSize: number ) {
   let loaded = 0;
   const reader = new ObservableFileReader();
 
@@ -26,9 +30,9 @@ export const readAsArrayBuffer = ( file: File, maxSize: number ) => {
       
   const finish = data.pipe( flatMap( () => {
     if( loaded >= file.size ) {
-      return empty();
+      return EMPTY;
     } else {
-      return never();
+      return NEVER;
     }
   } ) );
       

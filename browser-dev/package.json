@@ -1,17 +1,24 @@
 {
-  "name": "browser-util",
-  "version": "0.0.0",
+  "name": "@stm32p103/browser-utilities",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
+  "author": "stm32p103",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/utilities.git",
+    "directory": "browser-dev"
+  },
+  "keywords": [
+    "HTMLTableElement",
+    "FileReader"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.json"
   },
-  "author": "",
   "license": "MIT",
-  "peerDependencies": {
-    "rxjs": "^6.0.0"
-  },
   "dependencies": {
-    "rxjs": "^6.5.5"
+    "rxjs": "^6.0.0"
   }
 }

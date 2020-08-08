@@ -1,5 +1,8 @@
 import { Observable, fromEvent } from 'rxjs';
 
+/**
+ * FileReader APIのイベントをObservable化したラッパー
+ */
 export class ObservableFileReader extends FileReader {
   private getEvent<T>( name: string ): Observable<T> {
     return fromEvent<T>( this, name );
