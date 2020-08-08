@@ -1,4 +1,8 @@
-
+/**
+ * HTMLTableElementをstringの二次元配列に変換する。
+ * Colspan, Rowspanは左上以外を`null`で埋める。
+ * @param table 配列
+ */
 export function table2array( table: HTMLTableElement ) {
     let rowSkips: number[] = [];        // 1つ上の行基準のrowSpanの高さ。> 0 ならスキップが必要。
     const tableData: (string | null)[][] = [];
@@ -7,7 +11,7 @@ export function table2array( table: HTMLTableElement ) {
         const rowElement = table.rows[ i ];
         const rowCellCount = countColumns( rowElement );
 
-        // 空行の場合は、前の行と同じセル数のnullを返す
+        // 空行の場合は、前の行と同じセル数のnullで埋める。
         if( rowCellCount == 0 ) {
             rowSkips = rowSkips.map( skip => Math.max( 0, skip - 1 ) );
             tableData.push( new Array( tableData[ tableData.length - 1 ].length ).fill( null ) );

@@ -1,8 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
     "target": "es5",
-    "module": "commonjs",
+    "module": "es6",
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
@@ -15,5 +16,11 @@
       "es2018",
       "dom"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "sample",
+    "test",
+    "dist"
+  ]
 }

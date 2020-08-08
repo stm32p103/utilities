@@ -5,7 +5,7 @@ import { ObservableFileReader } from './observable-file-reader';
 /**
  * 指定したFileを読み込みArrayBufferに格納する。
  * @param file 読み出すファイル。
- * @param maxSize 1回の読出し当たりの最大バイト数。
+ * @param maxSize 1回の読出しあたりの最大バイト数。
  */
 export function readAsArrayBuffer( file: File, maxSize: number ) {
   let loaded = 0;
