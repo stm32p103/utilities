@@ -18,6 +18,12 @@
     },
     {
       "path": "./projects/libtest/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/vscode-service/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/vscode-service/tsconfig.spec.json"
     }
 ]
 }

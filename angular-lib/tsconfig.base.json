@@ -17,8 +17,12 @@
     ],
     "paths": {
       "dom-event-service": [
-        "dist/dom-event-service/dom-event-service",
+        "dist/dom-event-service/stm32p103-dom-event-service",
         "dist/dom-event-service"
+      ],
+      "vscode-service": [
+        "dist/vscode-service/vscode-service",
+        "dist/vscode-service"
       ]
     }
   }

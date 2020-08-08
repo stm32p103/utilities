@@ -1,24 +1,75 @@
 # DomEventService
+DOMイベントをAngularのサービスとして公開したもの。
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.6.
+# 使い方
 
-## Code scaffolding
+## サービスの登録
+`*.module.ts`の`providers`に追加する。
 
-Run `ng generate component component-name --project dom-event-service` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project dom-event-service`.
-> Note: Don't forget to add `--project dom-event-service` or else it will be added to the default project in your `angular.json` file. 
+```ts
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
 
-## Build
+import { AppComponent } from './app.component';
+import { PasteService, ResizeService } from 'dom-event-service'
 
-Run `ng build dom-event-service` to build the project. The build artifacts will be stored in the `dist/` directory.
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [PasteService, ResizeService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
 
-## Publishing
+## ResizeService
+リサイズイベントをサービス化する。`inner`と`outer`がそれぞれ`innerWidth/Height`と`outerWidth/Height`を公開する。
 
-After building your library with `ng build dom-event-service`, go to the dist folder `cd dist/dom-event-service` and run `npm publish`.
+```ts
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements AfterViewInit {
+  constructor( private resize: ResizeService ) {
+    this.resize.inner.subscribe( size => {
+      // innerwidth, innerHeight
+      console.log( `Inner: ${size.w}, ${size.h}` );
+    } );
+    
+    this.resize.outer.subscribe( size => {
+      // outerWidth, outerHeight
+      console.log( `Outer: ${size.w}, ${size.h}` );
+    } );
+  }
+}
+```
 
-## Running unit tests
+## PasteService
 
-Run `ng test dom-event-service` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```ts
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements AfterViewInit {
+  constructor( private paste: PasteService ) {
+    const parser = new DOMParser();
 
-## Further help
+    // Excel等から表を張り付けた場合に、表をHTMLTableElementとして取得する
+    this.paste.getData('text/html').subscribe( data =>{
+      const dom = parser.parseFromString( data, 'text/html' );
+      const table = dom.getElementsByTagName( 'table' )[0];
+      console.log( table );
+    } );
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+    // ペーストした画像を取得する
+  }
+}
+```

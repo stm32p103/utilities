@@ -3,13 +3,9 @@
   <li>width: {{width}}</li>
   <li>height: {{height}}</li>
 </ul>
-<h1>Upload</h1>
-<input (input)="select($event)" multiple="true" type="file">
-<h1>Image</h1>
-<input (input)="selectImage($event)" multiple="true" type="file" accept="image/png">
-<img #preview width="100%" src="{{image}}">
-<p>{{fileContent}}</p>
-<h1>Paste Array</h1>
-<table>
-<tr *ngFor="let row of table"><td *ngFor="let cell of row">{{cell}}</td></tr>
-</table>
+
+<h1>Pasted Table</h1>
+<div #tableContainer></div>
+
+<h1>Image\</h1>
+<canvas #imageContainer></canvas>

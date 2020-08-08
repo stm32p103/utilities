@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
 import { Observable, Subject, from } from 'rxjs';
 import { flatMap, map, filter } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +15,21 @@ export class PasteService {
     this.eventManager.addGlobalEventListener('window', 'paste', async ( event: ClipboardEvent ) => this.eventSubject.next( event ) );
   }
 
-  get event(): Observable<ClipboardEvent> {
+  /**
+   * @returns ClipboardEvent observable.
+   */
+  get paste(): Observable<ClipboardEvent> {
     return this.eventSubject;
   }
 
-  // MIMEタイプを指定してデータを取得する
+  /**
+   * `window`にペーストされたテキストデータをMIMEタイプを指定して取得する。
+   * 非テキストの場合は`file`で取得する。
+   * 
+   * MIME type: https://developer.mozilla.org/ja/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+   * @param mimeType 'text/html', 'text/plain', etc.
+   * @returns `window`にペーストされたテキストデータ
+   */
   getData( mimeType: string ): Observable<string> {
     return this.eventSubject.pipe( 
       map( e => e.clipboardData.getData( mimeType ) ),
@@ -26,15 +37,24 @@ export class PasteService {
     );
   }
 
-  private getFile() {
-    // この辺の仕様はブラウザ・バージョンによって変わるので、将来使えなくなるかもしれない
+  /**
+   * `window`にペーストされた`File`(画像など)を取得する。
+   * 
+   * @returns `window`にペーストされた非テキストデータ
+   */
+  get file() {
+    // ブラウザ・バージョンによって変わるので、将来使えなくなるかもしれない
+    // なぜか動作しなくなった。FileのLengthが1なのに、中身がundefinedになってしまう。
     return this.eventSubject.pipe( flatMap( e => {
       const files = e.clipboardData.files;
-      const array: File[] = new Array<File>( files.length );
+      const array: File[] = [];
 
       // 一旦配列にする
       for( let i = 0; i < files.length; i++ ) {
-        array[ i ] = files.item[ i ];
+        const file = files.item[ i ];
+        if( file ) {
+          array.push( file );
+        }
       }
 
       // Observableにする
@@ -42,10 +62,15 @@ export class PasteService {
     } ) );
   }
 
+  /**
+   * `winddow`にペーストされた`ImageBitmap`を取得する。
+   * 
+   * @returns 'window'にペーストされた画像(ImageBitmap)のObservable
+   */
   get image() {
     // MIME TypeがImageから始まっていたら画像として扱う
     // https://developer.mozilla.org/ja/docs/Web/HTTP/Basics_of_HTTP/MIME_types
-    return this.getFile().pipe( 
+    return this.file.pipe( 
       filter( file => file.type.match( '^image/' ).length > 0 ),
       flatMap( file => from( createImageBitmap( file ) ) )
     );

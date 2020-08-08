@@ -19,20 +19,28 @@ export class ResizeService {
   private eventSubject = new Subject<UIEvent>();
 
   constructor(private eventManager: EventManager) {
-    // Windowに対するペーストイベントをSubjectにする
     this.eventManager.addGlobalEventListener('window', 'resize', async (event:UIEvent) => this.eventSubject.next(event) );
   }
 
+  /**
+   * @returns resizeイベントのObservable
+   */
   get event(): Observable<UIEvent> {
     return this.eventSubject;
   }
 
+  /**
+   * @returns ウィンドウサイズ(innerWidth, innerHeight)
+   */
   get inner(): Observable<Size> {
     return this.eventSubject.pipe( map( () => {
       return { 'w': window.innerWidth, 'h': window.innerHeight };
     } ) )
   }
 
+  /**
+   * @returns ウィンドウサイズ(outerWidth, outerHeight)
+   */
   get outer(): Observable<Size> {
     return this.eventSubject.pipe( map( () => {
       return { 'w': window.outerWidth, 'h': window.outerHeight };
