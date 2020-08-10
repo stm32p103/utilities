@@ -51,25 +51,30 @@ export class AppComponent implements AfterViewInit {
 ```
 
 ## PasteService
-
+ペーストしたテキスト・画像を`Observable`として公開するサービス。
 ```ts
+import { Component, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
+import { PasteService } from 'dom-event-service';
+import { map } from "rxjs/operators";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-  constructor( private paste: PasteService ) {
-    const parser = new DOMParser();
+  @ViewChild('imageContainer') imageContainer: ElementRef<HTMLCanvasElement>;
 
-    // Excel等から表を張り付けた場合に、表をHTMLTableElementとして取得する
-    this.paste.getData('text/html').subscribe( data =>{
-      const dom = parser.parseFromString( data, 'text/html' );
-      const table = dom.getElementsByTagName( 'table' )[0];
-      console.log( table );
-    } );
+  constructor( private paste: PasteService ) {}
 
-    // ペーストした画像を取得する
+  ngAfterViewInit() {
+    const context = this.imageContainer.nativeElement.getContext( '2d' );
+    this.paste.getImage().pipe( map( image => {
+      context.drawImage( image, 0, 0 );
+      console.log( image );
+    } ) ).subscribe();
+
+    this.paste.getString().subscribe( str => this.pastedString = str );
   }
 }
 ```

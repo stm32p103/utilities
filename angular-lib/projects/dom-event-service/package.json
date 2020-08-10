@@ -1,7 +1,7 @@
 {
   "name": "@stm32p103/dom-event-service",
   "description": "DOM Event Services",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "license": "MIT",
   "author": "stm32p103",
   "repository": {
@@ -19,6 +19,7 @@
     "@angular/core": "^10.0.6"
   },
   "dependencies": {
+    "@stm32p103/browser-utilities": "^0.0.5",
     "rxjs": "^6.0.0",
     "tslib": "^2.0.0"
   }

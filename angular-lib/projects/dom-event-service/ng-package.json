@@ -2,9 +2,13 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/dom-event-service",
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "@stm32p103/browser-utilities": "@stm32p103/browser-utilities"
+   }
   },
   "whitelistedNonPeerDependencies": [
-    "rxjs"
+    "rxjs",
+    "@stm32p103/browser-utilities"
   ]
 }
