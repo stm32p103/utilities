@@ -24,6 +24,12 @@
     },
     {
       "path": "./projects/vscode-service/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/libexp/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/libexp/tsconfig.spec.json"
     }
 ]
 }

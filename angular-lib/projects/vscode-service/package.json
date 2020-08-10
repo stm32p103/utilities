@@ -1,0 +1,21 @@
+{
+  "name": "@stm32p103/vscode-service",
+  "version": "0.0.1",
+  "description": "VsCodeApi service",
+  "license": "MIT",
+  "author": "stm32p103",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/utilities.git",
+    "directory": "angular-lib/pojects/vscode-service"
+  },
+  "keywords": [ "Angular", "Vscode" ],
+  "peerDependencies": {
+    "@angular/common": "^10.0.6",
+    "@angular/core": "^10.0.6"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0",
+    "rxjs": "^6.0.0"
+  }
+}
