@@ -2,18 +2,6 @@ import { Subject, from, pipe } from 'rxjs';
 import { flatMap, map, filter } from 'rxjs/operators';
 
 /**
- * `DataTransferItem`を文字列として取得するSubjectを返す関数。
- */
-function createGetAsStringSubject( item: DataTransferItem ) {
-  const subject = new Subject<string>();
-  item.getAsString( result => {
-    subject.next( result );
-    subject.complete();
-  } );
-  return subject;
-}
-
-/**
  * `null`, `undefined`ではないことを確認する型ガード関数。
  * @param input チェック対象
  */
@@ -42,10 +30,10 @@ export function getString( mimeType: RegExp | string = `/^text` ) {
   } else {
     tester = mimeType;
   }
-  
+
   return pipe( 
     filter<DataTransferItem>( item => ( item.kind == 'string' ) && ( tester.test( item.type ) ) ),
-    flatMap( item => createGetAsStringSubject( item ) )
+    flatMap( item => from( new Promise<string>( resolve => item.getAsString( result => resolve( result ) ) ) ) )
   );
 }
 

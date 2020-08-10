@@ -1,9 +1,12 @@
 {
   "name": "@stm32p103/browser-utilities",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.js",
   "author": "stm32p103",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/stm32p103/utilities.git",

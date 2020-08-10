@@ -1,10 +1,9 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
-import { map, flatMap, tap } from "rxjs/operators";
-import { Subject, Observable } from 'rxjs';
+import { flatMap, tap } from "rxjs/operators";
+import { Subject } from 'rxjs';
 import { readAsText } from '../../../dist/file-reader'
 
-import { table2array } from '../../../dist/dom'
 import { getDataTransferItem, getString, getImage } from '../../../dist/operators'
 
 @Component({
@@ -44,7 +43,9 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const item = this.clipboardEvent.pipe( getDataTransferItem() )
-    item.pipe( getString( /plain/ ) ).subscribe( str => this.pastedString = str );
+    item.pipe( getString( /plain/ ) ).subscribe( str => {
+      this.pastedString = str;
+    } );
 
     const context = this.imageContainer.nativeElement.getContext('2d');
     item.pipe( getImage() ).subscribe( image => context.drawImage( image, 0, 0 ) );  
