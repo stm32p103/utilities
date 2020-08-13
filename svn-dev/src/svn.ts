@@ -28,7 +28,7 @@ export class RevisionRange implements SvnOption {
   format() {
     let res = formatRevision( this.from );
     if( this.to ) {
-      res = res + ':' + formatRevision( this.to );
+      res = formatRevision( this.to ) + ':' + res;
     }
     return [ '--revision', res ];
   }
@@ -97,15 +97,6 @@ export class CheckoutOption implements SvnOption {
   }
 }
 
-type ResolutionAction = 'postpone'
-  | 'working'
-  | 'base' 
-  | 'mine-conflict'
-  | 'theirs-conflict'
-  | 'mine-full'
-  | 'theirs-full'
-//| 'edit'
-  | 'launch'
 /**
  *  @class svn checkout のオプション
  */
@@ -162,7 +153,7 @@ export class SvnClient {
     }, init ) as string[];
 
     try {
-      return asyncSpawn( this.encoding, 'svn', optionStrings );
+      return asyncSpawn( 'svn', optionStrings, { encoding: this.encoding } );
     } catch( err ) {
       throw new Error( err.stderr );
     };

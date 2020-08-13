@@ -7,6 +7,8 @@ export interface SpawnResult {
   stderr: string;
 }
 
+type AsyncSpawnOption = SpawnOptions & { encoding: string };
+
 /**
  * child_process.spawnを実行し、終了コードとstdout, stderrの内容をstringとして返す。
  * @param encoding stdout, stderrの文字コード([iconv-lite](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings)対応している文字コードより選択)
@@ -15,13 +17,13 @@ export interface SpawnResult {
  * @param options オプション(spawnと同様)
  * @returns 終了コード, stdout, stderrの出力
  */
-export async function asyncSpawn( encoding: string, command: string, args: string[] = [], options: SpawnOptions = {} ) {
+export async function asyncSpawn( command: string, args: string[] = [], options: AsyncSpawnOption = { encoding: 'utf8' } ) {
   const childProcess = spawn( command, args, options );
   const stdout: string[] = [];
   const stderr: string[] = [];
 
-  childProcess.stdout.pipe( decodeStream( encoding ) ).on( 'data', ( line: string ) => stdout.push( line ) );
-  childProcess.stderr.pipe( decodeStream( encoding ) ).on( 'data', ( line: string ) => stderr.push( line ) );
+  childProcess.stdout.pipe( decodeStream( options.encoding ) ).on( 'data', ( line: string ) => stdout.push( line ) );
+  childProcess.stderr.pipe( decodeStream( options.encoding ) ).on( 'data', ( line: string ) => stderr.push( line ) );
 
   return new Promise<SpawnResult>( ( resolve, reject ) => {
     childProcess.on( 'close', code => {

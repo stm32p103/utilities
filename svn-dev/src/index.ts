@@ -1,9 +1,3 @@
-import { asyncSpawn } from './spawn';
-import { fromEvent, merge, throwError, Subject, Observable } from 'rxjs';
-import { flatMap, takeUntil, map, toArray } from 'rxjs/operators';
-import { Readable, Writable } from 'stream';
-import { URL } from 'url';
-
 import { SvnClient, CheckoutOption, SvnGlobalOption, Depth, RevisionRange, UpdateOption } from './svn'
 
 const sampleCredential = {
@@ -14,7 +8,7 @@ const sampleCredential = {
 async function test() {
   try {
     const res = [];
-    res.push( await client.checkout( new Depth( 'http://localhost/repos', 'empty' ), 'K:/ws/svn/checkout', 
+    res.push( await client.checkout( new Depth( 'http://localhost/repos' ), 'K:/ws/svn/checkout', 
       new CheckoutOption( { 
       revision: new RevisionRange( 1 )
     } ) ) );
@@ -34,4 +28,4 @@ async function test() {
 console.log( '------------' );
 const client = new SvnClient( 'Shift_JIS', new SvnGlobalOption( sampleCredential ) );
 test();
-　
+
