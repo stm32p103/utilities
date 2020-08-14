@@ -33,6 +33,7 @@ export async function asyncSpawn( command: string, args: string[] = [], options:
         stderr: stderr.join('')
       };
       
+      // 終了コード非0の時は異常終了のためRejectする
       if( code == 0 ) {
         resolve( result );
       } else {
