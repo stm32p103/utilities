@@ -1,4 +1,8 @@
 import { asyncSpawn } from './spawn';
+
+import { JSDOM } from 'jsdom';
+import { jsonifyLogEntry } from './log';
+
 /* ############################################################################
  * Options
  * ######################################################################### */
@@ -28,7 +32,7 @@ export class RevisionRange implements SvnOption {
   format() {
     let res = formatRevision( this.from );
     if( this.to ) {
-      res = formatRevision( this.to ) + ':' + res;
+      res = res + ':' + formatRevision( this.to );
     }
     return [ '--revision', res ];
   }
@@ -152,8 +156,14 @@ export class SvnClient {
       return prev;
     }, init ) as string[];
 
+    // --xml オプション時は UTF8を使用する
+    let encoding = this.encoding;
+    if( optionStrings.indexOf( '--xml' ) ) {
+      encoding = 'utf8';
+    }
+
     try {
-      return asyncSpawn( 'svn', optionStrings, { encoding: this.encoding } );
+      return asyncSpawn( 'svn', optionStrings, { encoding: encoding } );
     } catch( err ) {
       throw new Error( err.stderr );
     };
@@ -179,4 +189,24 @@ export class SvnClient {
     return this.execute( 'update', [ option, ...depthList.map( depth => depth.format() ) ] );
   }
 
+  async log( path: string ) {
+    const log = await this.execute( 'log', [ '-v', '-r', 'HEAD:1', '--xml', path ] );
+
+    const jsdom = new JSDOM();
+    const parser = new jsdom.window.DOMParser();
+    const doc = parser.parseFromString( log.stdout, 'application/xhtml+xml' );
+    
+    const logEntries = doc.querySelectorAll( 'logentry' );
+    const res= [];
+    
+    for( let i=0; i<logEntries.length; i++ ) {
+      res.push( jsonifyLogEntry( logEntries.item(i) ) );
+    }
+
+    return res;
+  }
 }
+
+
+
+

@@ -19,9 +19,12 @@ async function test() {
     ], new UpdateOption( {
       revision: new RevisionRange( 'HEAD' )
     } ) ) );
-    console.log( res.map( res => res.stdout ) );
+
+    const log = await client.log( 'http://localhost/repos' );
+    console.dir( log, { depth: null } );
   } catch( err ) {
-    console.log( err.stderr );
+    console.error( 'err' );
+    console.error( err );
   }
 }
 
