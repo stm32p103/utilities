@@ -1,7 +1,9 @@
 import { JSDOM } from 'jsdom';
+import { SvnLogPathKind, SvnLogPathAction } from './types';
+import { getInnerHtml } from './util';
 
-type SvnLogEntry = {
-  revision: string;
+export type SvnLogEntry = {
+  revision: number;
   author: string;
   date: Date;
   message: string;
@@ -9,32 +11,23 @@ type SvnLogEntry = {
 }
 
 type SvnLogCopyFrom = {
-  revision: string;
+  revision: number;
   path: string;
 };
-
-type SvnLogPathKind = 'dir'     /// directory
-                    | 'file';   /// file
-
-type SvnLogPathAction = 'A'     /// added 
-                      | 'D'     /// deleted
-                      | 'R'     /// replaced
-                      | 'M';    /// modified
 
 type SvnLogPath = {
   isPropertyModified: boolean;
   isTextModified: boolean;
   kind: SvnLogPathKind;
   action: SvnLogPathAction;
-  copyFrom?: {
-    path: string;
-    revision: string;
-  }
+  copyFrom?: SvnLogCopyFrom;
   path: string;
 }
 
-/** svn log --xml の出力をJSONに変換する */
-export function jsonifyLog( log: string ) {
+/** 
+ * svn log --xml の出力をJSONに変換する 
+ * @param log svn log --xml の結果 */
+export function getLog( log: string ) {
   const jsdom = new JSDOM();
   const parser = new jsdom.window.DOMParser();
   const doc = parser.parseFromString( log, 'application/xhtml+xml' );
@@ -43,54 +36,52 @@ export function jsonifyLog( log: string ) {
   const res: SvnLogEntry[] = [];
   
   for( let i=0; i<logEntries.length; i++ ) {
-    res.push( jsonifyLogEntry( logEntries.item(i) ) );
+    res.push( getLogEntry( logEntries.item(i) ) );
   }
 
   return res;
 }
 
 /** svn log --xml の1リビジョン分のログをJSONに変換する。
- * @param entryElement \<logentry\>要素
+ * @param element \<logentry\>要素
  */
-function jsonifyLogEntry( entryElement: Element ) {
+function getLogEntry( element: Element ) {
   const json: SvnLogEntry = {
-    revision: entryElement.getAttribute( 'revision' ),
-    author: entryElement.querySelector( 'author' ).innerHTML,
-    date: new Date( entryElement.querySelector( 'date' ).innerHTML ),
-    message: entryElement.querySelector( 'msg' ).innerHTML,
+    revision: Number( element.getAttribute( 'revision' ) ),
+    author: getInnerHtml( element, 'author' ),
+    date: new Date( getInnerHtml( element, 'date' ) ),
+    message: getInnerHtml( element, 'msg' ),
     paths: []
   };
 
-  const pathElements = entryElement.querySelectorAll( 'path' );
+  const pathElements = element.querySelectorAll( 'path' );
   for( let i=0; i < pathElements.length; i++ ) {
-    json.paths.push( jsonifyLogPath( pathElements.item( i ) ) );
+    json.paths.push( getLogPath( pathElements.item( i ) ) );
   }
 
   return json;
 }
 
 /** svn log --xml の1リビジョンに含まれる \<path\>要素をJSONに変換する。
- * @param path \<path\>要素
+ * @param element \<path\>要素
  */
-function jsonifyLogPath( path: Element ) {
-  const json: SvnLogPath = {
-    path: path.innerHTML,
-    kind: path.getAttribute( 'kind' ) as SvnLogPathKind,              // no check
-    isTextModified: Boolean( path.getAttribute( 'text-mods' ) ),
-    isPropertyModified: Boolean( path.getAttribute( 'prop-mods' ) ),
-    action: path.getAttribute( 'action' ) as SvnLogPathAction         // no check
-  };
-
-  // branch info
+function getLogPath( element: Element ) {
   let copyFrom: SvnLogCopyFrom;
-  if( path.hasAttribute( 'copyfrom-path' ) ) {
+  if( element.hasAttribute( 'copyfrom-path' ) ) {
     copyFrom = {
-      revision: path.getAttribute( 'copyfrom-rev' ),
-      path: path.getAttribute( 'copyfrom-path' ),
+      revision: Number( element.getAttribute( 'copyfrom-rev' ) ),
+      path: element.getAttribute( 'copyfrom-path' ),
     };
-
-    json.copyFrom = copyFrom;
   }
+
+  const json: SvnLogPath = {
+    path: element.innerHTML,
+    kind: element.getAttribute( 'kind' ) as SvnLogPathKind,              // no check
+    isTextModified: Boolean( element.getAttribute( 'text-mods' ) ),
+    isPropertyModified: Boolean( element.getAttribute( 'prop-mods' ) ),
+    action: element.getAttribute( 'action' ) as SvnLogPathAction,        // no check
+    copyFrom: copyFrom
+  };
 
   return json;
 }

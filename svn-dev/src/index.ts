@@ -7,6 +7,7 @@ const sampleCredential = {
 
 async function test() {
   try {
+    /*
     const res = [];
     res.push( await client.checkout( new Depth( 'http://localhost/repos' ), 'K:/ws/svn/checkout', 
       new SvnCheckoutOption( { 
@@ -19,8 +20,8 @@ async function test() {
     ], new SvnUpdateOption( {
       revision: new RevisionRange( 'HEAD' )
     } ) ) );
-
-    const log = await client.log( 'K:/ws/svn/checkout/sample' );
+    */
+    const log = await client.info( 'K:/ws/svn/checkout/sample' );
     console.dir( log, { depth: null } );
   } catch( err ) {
     console.error( 'err' );

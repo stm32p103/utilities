@@ -1,5 +1,6 @@
 import { asyncSpawn } from './spawn';
-import { jsonifyLog } from './log';
+import { getLog } from './log';
+import { getInfo } from './info';
 
 /* ############################################################################
  * Options
@@ -133,6 +134,35 @@ export class SvnUpdateOption implements SvnOption {
 }
 
 /**
+ *  @class svn info のオプション
+ */
+export class SvnInfoOption implements SvnOption {
+  public readonly revision: RevisionRange;
+  public readonly recursive: boolean;
+  // (omit) depth
+  // (omit) target
+  // (omit) incremental
+  // (always) xml
+  // (omit) changelist
+  public readonly includeExternals: boolean;
+  // (omit) show-item
+  // (omit) no-newline
+  // (omit) x-viewspec
+
+  constructor( base: Partial<SvnInfoOption> = {} ) {
+    Object.assign( this, base );
+  }
+  format() {
+    const res: string[] = [];
+    if( this.revision ) res.push( ...this.revision.format() );
+    if( this.recursive ) res.push( '--recursive' );
+    res.push( '--xml' );
+    if( this.includeExternals ) res.push( '--include-externals' );
+    return res;
+  }
+}
+
+/**
  *  @class svn log のオプション
  */
 export class SvnLogOption implements SvnOption {
@@ -176,6 +206,52 @@ export class SvnLogOption implements SvnOption {
 
 /**
  *  @class SVN Client
+ *  * \[-]  add
+ *  * \[-]  auth
+ *  * \[-]  blame (praise, annotate, ann)
+ *  * \[-]  cat
+ *  * \[-]  changelist (cl)
+ *  * \[x]  checkout (co)
+ *  * \[-]  cleanup
+ *  * \[-]  commit (ci)
+ *  * \[-]  copy (cp)
+ *  * \[-]  delete (del, remove, rm)
+ *  * \[-]  diff (di)
+ *  * \[-]  export
+ *  * \[-]  help (?, h)
+ *  * \[-]  import
+ *  * \[x]  info
+ *  * \[-]  list (ls)
+ *  * \[-]  lock
+ *  * \[x]  log
+ *  * \[-]  merge
+ *  * \[-]  mergeinfo
+ *  * \[-]  mkdir
+ *  * \[-]  move (mv, rename, ren)
+ *  * \[-]  patch
+ *  * \[-]  propdel (pdel, pd)
+ *  * \[-]  propedit (pedit, pe)
+ *  * \[-]  propget (pget, pg)
+ *  * \[-]  proplist (plist, pl)
+ *  * \[-]  propset (pset, ps)
+ *  * \[-]  relocate
+ *  * \[-]  resolve
+ *  * \[-]  resolved
+ *  * \[-]  reversvn
+ *  * \[-]  status (stat, st)
+ *  * \[-]  switch (sw)
+ *  * \[-]  unlock
+ *  * \[x]  update (up)
+ *  * \[-]  upgrade
+ *  * \[-]  x-shelf-diff
+ *  * \[-]  x-shelf-drop
+ *  * \[-]  x-shelf-list (x-shelves)
+ *  * \[-]  x-shelf-list-by-paths
+ *  * \[-]  x-shelf-log
+ *  * \[-]  x-shelf-save
+ *  * \[-]  x-shelve
+ *  * \[-]  x-unshelve
+ *  * \[-]  x-wc-copy-mods
  */
 export class SvnClient {
   private option: string[];
@@ -196,7 +272,7 @@ export class SvnClient {
       return prev;
     }, init ) as string[];
 
-    // --xml オプション時は UTF8を使用する
+    // --xml オプション使用時は UTF8を使用する
     let encoding = this.encoding;
     if( optionStrings.indexOf( '--xml' ) ) {
       encoding = 'utf8';
@@ -235,11 +311,14 @@ export class SvnClient {
    */
   async log( urlOrPath: URL | string, option: SvnLogOption = new SvnLogOption() ) {
     const res = await this.execute( 'log', [ ...option.format(), urlOrPath.toString() ] );
-    const log = jsonifyLog( res.stdout );
+    const log = getLog( res.stdout );
+    return log;
+  }
+
+  async info( urlOrPathList: string | URL | ( string | URL )[], option: SvnInfoOption = new SvnInfoOption() ) {
+    const list = ( urlOrPathList instanceof Array ) ? urlOrPathList : [ urlOrPathList ];
+    const res = await this.execute( 'info', [ ...option.format(), list.map( urlOrPath => urlOrPath.toString() ) ] );
+    const log = getInfo( res.stdout );
     return log;
   }
 }
-
-
-
-
