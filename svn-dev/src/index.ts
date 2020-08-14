@@ -1,4 +1,4 @@
-import { SvnClient, CheckoutOption, SvnGlobalOption, Depth, RevisionRange, UpdateOption } from './svn'
+import { SvnClient, SvnCheckoutOption, SvnGlobalOption, Depth, RevisionRange, SvnUpdateOption } from './svn'
 
 const sampleCredential = {
   username: 'cliuser',
@@ -9,18 +9,18 @@ async function test() {
   try {
     const res = [];
     res.push( await client.checkout( new Depth( 'http://localhost/repos' ), 'K:/ws/svn/checkout', 
-      new CheckoutOption( { 
+      new SvnCheckoutOption( { 
       revision: new RevisionRange( 1 )
     } ) ) );
 
     res.push( await client.update( [
       new Depth( 'k:/ws/svn/checkout/sample'),
       new Depth( 'k:/ws/svn/checkout/package', 'immediates' )
-    ], new UpdateOption( {
+    ], new SvnUpdateOption( {
       revision: new RevisionRange( 'HEAD' )
     } ) ) );
 
-    const log = await client.log( 'http://localhost/repos' );
+    const log = await client.log( 'K:/ws/svn/checkout/sample' );
     console.dir( log, { depth: null } );
   } catch( err ) {
     console.error( 'err' );

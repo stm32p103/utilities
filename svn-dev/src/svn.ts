@@ -1,7 +1,5 @@
 import { asyncSpawn } from './spawn';
-
-import { JSDOM } from 'jsdom';
-import { jsonifyLogEntry } from './log';
+import { jsonifyLog } from './log';
 
 /* ############################################################################
  * Options
@@ -84,12 +82,12 @@ export class SvnGlobalOption implements SvnOption {
 /**
  *  @class svn checkout のオプション
  */
-export class CheckoutOption implements SvnOption {
+export class SvnCheckoutOption implements SvnOption {
   readonly force: boolean = false;
   readonly ignoreExternals: boolean = false;
   readonly revision?: RevisionRange;
   
-  constructor( base: Partial<CheckoutOption> = {} ) {
+  constructor( base: Partial<SvnCheckoutOption> = {} ) {
     Object.assign( this, base );
   }
   format() {
@@ -102,11 +100,11 @@ export class CheckoutOption implements SvnOption {
 }
 
 /**
- *  @class svn checkout のオプション
+ *  @class svn update のオプション
  */
-export class UpdateOption implements SvnOption {
+export class SvnUpdateOption implements SvnOption {
   readonly revision?: RevisionRange;
-  // (omit) depth
+  // (param) depth
   readonly setDepth?: Depth;
   // (omit) quite
   // (omit) diff3-cmd
@@ -118,7 +116,7 @@ export class UpdateOption implements SvnOption {
   // (always) parent
   // (omit) add-as-modification
 
-  constructor( base: Partial<UpdateOption> = {} ) {
+  constructor( base: Partial<SvnUpdateOption> = {} ) {
     Object.assign( this, base );
   }
 
@@ -133,6 +131,48 @@ export class UpdateOption implements SvnOption {
     return res;
   }
 }
+
+/**
+ *  @class svn log のオプション
+ */
+export class SvnLogOption implements SvnOption {
+  readonly revision?: RevisionRange;
+  // (omit) change
+  // (omit) quite
+  // (always) verbose
+  // (always) use-merge-history
+  // (omit) path
+  readonly stopOnCopy?: boolean;
+  // (omit) incremental
+  // (always) xml
+  // (omit) limit
+  // (always) with-all-revprops
+  // (omit) with-no-revprops
+  // (omit) with-revprop
+  // (omit) depth
+  // (omit) diff
+  // (omit) diff-cmd
+  // (omit) internal-diff
+  // (omit) extensions
+  // (omit) search
+  // (omit) search-and
+
+  constructor( base: Partial<SvnLogOption> = {} ) {
+    Object.assign( this, base );
+  }
+
+  format() {
+    const res: string[] = [];
+    if( this.revision ) res.push( ...this.revision.format() );
+    if( this.stopOnCopy ) res.push( '--stop-on-copy' );
+    res.push( '--verbose' );
+    res.push( '--use-merge-history' );
+    res.push( '--xml' );
+    res.push( '--with-all-revprops' );
+    return res;
+  }
+}
+
 
 /**
  *  @class SVN Client
@@ -175,7 +215,7 @@ export class SvnClient {
    * @param option チェックアウト時のオプションを指定する。
    * @returns 終了コード, stdout, stderrの出力を返す。
    */
-  async checkout( depth: Depth, path: string, option: CheckoutOption = new CheckoutOption() ) {
+  async checkout( depth: Depth, path: string, option: SvnCheckoutOption = new SvnCheckoutOption() ) {
     return this.execute( 'checkout', [ depth, option, path ] );
   }
 
@@ -184,26 +224,19 @@ export class SvnClient {
    * @param option 更新時のオプションを指定する。
    * @returns 終了コード, stdout, stderrの出力を返す。
    */
-  async update( depth: Depth | Depth[], option: UpdateOption = new UpdateOption() ) {
+  async update( depth: Depth | Depth[], option: SvnUpdateOption = new SvnUpdateOption() ) {
     const depthList = ( depth instanceof Array ) ? depth : [ depth ];
     return this.execute( 'update', [ option, ...depthList.map( depth => depth.format() ) ] );
   }
 
-  async log( path: string ) {
-    const log = await this.execute( 'log', [ '-v', '-r', 'HEAD:1', '--xml', path ] );
-
-    const jsdom = new JSDOM();
-    const parser = new jsdom.window.DOMParser();
-    const doc = parser.parseFromString( log.stdout, 'application/xhtml+xml' );
-    
-    const logEntries = doc.querySelectorAll( 'logentry' );
-    const res= [];
-    
-    for( let i=0; i<logEntries.length; i++ ) {
-      res.push( jsonifyLogEntry( logEntries.item(i) ) );
-    }
-
-    return res;
+  /**
+   * @param urlOrPath URLまたは作業コピーのパス。URLの場合はURL以下の変更を返す。パスの場合はパスに対する変更のみを返す。
+   * @param option ログのオプションを指定する。diff, searchなどは未実装。
+   */
+  async log( urlOrPath: URL | string, option: SvnLogOption = new SvnLogOption() ) {
+    const res = await this.execute( 'log', [ ...option.format(), urlOrPath.toString() ] );
+    const log = jsonifyLog( res.stdout );
+    return log;
   }
 }
 
