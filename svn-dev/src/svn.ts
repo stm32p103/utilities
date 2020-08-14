@@ -286,28 +286,31 @@ export class SvnClient {
   }
 
   /**
-   * @param depth SVNサーバのURLと深さを選択する。後からupdateでフォルダ・深さを広げることは可能。狭めることはできない。
+   * リポジトリURLと深さを指定してチェックアウトする。後からupdateでフォルダ・深さを広げることは可能だが狭めることはできないので注意する。
+   * 失敗したら、SpawnResult( 終了コード, stdout, stderr )を引数に例外を投げる。
+   * @param depth リポジトリのURLと深さを指定する。
    * @param path チェックアウト先のフォルダのパスを指定する。
    * @param option チェックアウト時のオプションを指定する。
-   * @returns 終了コード, stdout, stderrの出力を返す。
    */
   async checkout( depth: Depth, path: string, option: SvnCheckoutOption = new SvnCheckoutOption() ) {
-    return this.execute( 'checkout', [ depth, option, path ] );
+    await this.execute( 'checkout', [ depth, option, path ] );
   }
 
   /**
-   * @param depth 更新対象の作業コピーのパスと深さを指定する。複数設定可能。
+   * リポジトリURLと深さを指定してチェックアウトする。作業コピーの範囲(フォルダ・深さ)を広げることは可能だが狭めることはできないので注意する。
+   * 失敗したら、SpawnResult( 終了コード, stdout, stderr )を引数に例外を投げる。
+   * @param depth 更新対象の作業コピーのパスと深さを指定する。
    * @param option 更新時のオプションを指定する。
-   * @returns 終了コード, stdout, stderrの出力を返す。
    */
   async update( depth: Depth | Depth[], option: SvnUpdateOption = new SvnUpdateOption() ) {
     const depthList = ( depth instanceof Array ) ? depth : [ depth ];
-    return this.execute( 'update', [ option, ...depthList.map( depth => depth.format() ) ] );
+    await this.execute( 'update', [ option, ...depthList.map( depth => depth.format() ) ] );
   }
 
   /**
-   * @param urlOrPath URLまたは作業コピーのパス。URLの場合はURL以下の変更を返す。パスの場合はパスに対する変更のみを返す。
-   * @param option ログのオプションを指定する。diff, searchなどは未実装。
+   * 指定したリポジトリのURL,作業コピーのパスのコミットログを取得する。URLの場合はURL以下の変更を返す。パスの場合はパスに対する変更のみを返す。
+   * @param urlOrPath リポジトリのURLまたは作業コピーのパス。
+   * @param option svn log のオプションを指定する。
    */
   async log( urlOrPath: URL | string, option: SvnLogOption = new SvnLogOption() ) {
     const res = await this.execute( 'log', [ ...option.format(), urlOrPath.toString() ] );
@@ -315,6 +318,11 @@ export class SvnClient {
     return log;
   }
 
+  /**
+   * 指定したリポジトリのURL,作業コピーのパスの情報を取得する。
+   * @param urlOrPathList URLまたは作業コピーのパス。
+   * @param option svn info のオプションを指定する。
+   */
   async info( urlOrPathList: string | URL | ( string | URL )[], option: SvnInfoOption = new SvnInfoOption() ) {
     const list = ( urlOrPathList instanceof Array ) ? urlOrPathList : [ urlOrPathList ];
     const res = await this.execute( 'info', [ ...option.format(), list.map( urlOrPath => urlOrPath.toString() ) ] );

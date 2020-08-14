@@ -2,43 +2,43 @@ import { JSDOM } from 'jsdom';
 import { SvnLogPathKind } from './types';
 import { getInnerHtml } from './util';
 
+/* ############################################################################
+ * svn info のXML形式のログをオブジェクトに変換する。
+ * 自動的に変換できない。
+ * ######################################################################### */
+
+// コミット情報
 type SvnCommitInfo = {
   revision: number;
   author: string;
   date: Date;
 }
 
+// リポジトリ情報
 type SvnRepositoryInfo = {
   root: string;
   uuid: string;
 }
 
-// only for working-copy
+// 作業コピー情報
 type SvnWorkingCopyInfo = {
   root: string;
   schedule: string;
   depth: string;
 }
 
-type SvnInfoEntry = {
+// svn info で取得できる情報
+export type SvnInfoEntry = {
   kind: SvnLogPathKind;
-  path: string;
+  path: string;                       // 作業コピーの場合は絶対パス、リポジトリURLの場合はディレクトリ名・ファイル名のみ
   revision: number;
-  url: {
+  url: {                              // リポジトリURLの情報
     absolute: string;
     relative: string;
   },
   commit: SvnCommitInfo;
-  repository: {
-    root: string;
-    uuid: string;
-  },
-  // only for working-copy
-  workingCopyInfo?: {
-    root: string;
-    schedule: string;
-    depth: string;
-  }
+  repository: SvnRepositoryInfo;
+  workingCopyInfo?: SvnWorkingCopyInfo; // 作業コピー時のみ
 }
 
 /** svn info --xml の出力をJSONに変換する */
@@ -68,9 +68,12 @@ function getInfoEntry( element: Element ) {
     },
     commit: getCommit( element.querySelector( 'commit' ) ),
     repository: getRepository( element.querySelector( 'repository' ) ),
-    workingCopyInfo: getWorkingCopyInfo( element.querySelector( 'wc-info' ) )
   };
 
+  const wcInfo = element.querySelector( 'wc-info' );
+  if( wcInfo ) {
+    json.workingCopyInfo = getWorkingCopyInfo( wcInfo ;
+  }
   return json;
 }
 
@@ -92,8 +95,6 @@ function getRepository( element: Element ) {
 }
 
 function getWorkingCopyInfo( element: Element ) {
-  if( element == null ) return;
-
   const json: SvnWorkingCopyInfo = {
     root: getInnerHtml( element, 'wcroot-abspath' ),
     schedule: getInnerHtml( element, 'schedule' ),

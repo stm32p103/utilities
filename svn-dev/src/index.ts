@@ -21,7 +21,10 @@ async function test() {
       revision: new RevisionRange( 'HEAD' )
     } ) ) );
     */
-    const log = await client.info( 'K:/ws/svn/checkout/sample' );
+    let log = await client.info( 'K:/ws/svn/checkout/sample/a00-01' );
+    console.dir( log, { depth: null } );
+    
+    log = await client.info( 'http://localhost/repos/sample/a00-01' );
     console.dir( log, { depth: null } );
   } catch( err ) {
     console.error( 'err' );
