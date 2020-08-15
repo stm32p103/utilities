@@ -72,7 +72,7 @@ function getInfoEntry( element: Element ) {
 
   const wcInfo = element.querySelector( 'wc-info' );
   if( wcInfo ) {
-    json.workingCopyInfo = getWorkingCopyInfo( wcInfo ;
+    json.workingCopyInfo = getWorkingCopyInfo( wcInfo );
   }
   return json;
 }
