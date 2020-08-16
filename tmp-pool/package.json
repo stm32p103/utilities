@@ -1,0 +1,36 @@
+{
+  "name": "@stm32p103/tmp-pool",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/utilities.git",
+    "directory": "tmp-pool"
+  },
+  "keywords": [
+    "Temporary file"
+  ],
+  "scripts": {
+    "build:watch": "tsc -w -p tsconfig.json",
+    "start:dev": "nodemon --config nodemon.json",
+    "test": "jest --silent=false"
+  },
+  "author": "stm32p103",
+  "license": "MIT",
+  "dependencies": {
+    "tmp": "^0.2.1",
+    "tslib": "^2.0.0",
+    "typescript": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/tmp": "^0.2.0",
+    "@types/jest": "^26.0.3",
+    "@types/node": "^14.0.0",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.1"
+  }
+}
