@@ -82,10 +82,18 @@ export class TortoiseSvnLauncher {
    * パスはオプション /pathfile や /logmsgfile で指定する。
    * @param data 書きこむ文字列。
    */
-  private async writeTmpFile( data: string ) {
+  private async writeTmpFile( data: string, encoding: BufferEncoding ) {
     let path = await this.tmpPool.acquire();
-    await promises.writeFile( path, data, { encoding: 'utf16le' } );
+    await promises.writeFile( path, data, { encoding: encoding } );
     return path;
+  }
+
+  private writePathFile( data: string ) {
+    return this.writeTmpFile( data, 'utf16le' );
+  }
+
+  private writeLogMsgFile( data: string ) {
+    return this.writeTmpFile( data, 'utf8' );
   }
 
   /**
@@ -113,7 +121,8 @@ export class TortoiseSvnLauncher {
    * /command:about を実行し、「バージョン情報」ダイアログを表示する。 
    * @returns 起動したTortoiseProcのpid。
    */
-  about() {
+  async about() {
+    // 他のコマンドと使い方を合わせられるよう、あえてasyncにしている。
     return this.spawn( 'about' );
   }
 
@@ -125,7 +134,7 @@ export class TortoiseSvnLauncher {
    */
   async log( path: string ) {
     // 空白・2バイト文字は正常に引数で渡せないため、一時ファイルに書いてから与える。
-    const pathfile = await this.writeTmpFile( path );
+    const pathfile = await this.writePathFile( path );
     const args: string[] = [ `/pathfile:${pathfile}` ];
     const res = this.spawn( 'log', args );
 
@@ -148,7 +157,7 @@ export class TortoiseSvnLauncher {
 
     let toPath: string;
     if( option.to ) {
-      toPath = await this.writeTmpFile( option.to );
+      toPath = await this.writePathFile( option.to );
       args.push( `/pathfile:${toPath}` );
     }
 
@@ -156,7 +165,7 @@ export class TortoiseSvnLauncher {
 
     // 一時ファイルを解放する。
     if( toPath ) this.releaseTmpFile( toPath );
-    
+
     return res;
   }
 
@@ -175,14 +184,14 @@ export class TortoiseSvnLauncher {
     // メッセージを一時ファイルに保存し、logmsgfileオプションで与える。
     let logMsgFile: string;
     if( option.logMessage ) {
-      logMsgFile = await this.writeTmpFile( option.logMessage );
+      logMsgFile = await this.writeLogMsgFile( option.logMessage );
       args.push( `/logmsgfile:${logMsgFile}` );
     }
 
     // import対象のパスを一時ファイルに保存し、pathfileオプションで与える。
     let pathFile: string;
     if( option.from ) {
-      pathFile = await this.writeTmpFile( option.from );
+      pathFile = await this.writePathFile( option.from );
       args.push( `/pathfile:${pathFile}`);
     }
     
@@ -203,7 +212,7 @@ export class TortoiseSvnLauncher {
    */
   async update( path: string ) {
     // update対象のパスを一時ファイルに保存し、pathfileオプションで与える。
-    const pathFile = await this.writeTmpFile( path );
+    const pathFile = await this.writeLogMsgFile( path );
     const args: string[] = [ `/pathfile:${pathFile}`, '/rev' ];
     
     // TortoiseProcを起動する。
@@ -225,7 +234,7 @@ export class TortoiseSvnLauncher {
     const args: string[] = [];
     
     // update対象のパスを一時ファイルに保存し、pathfileオプションで与える。
-    const pathFile = await this.writeTmpFile( path );
+    const pathFile = await this.writeLogMsgFile( path );
     args.push( `/pathfile:${pathFile}` );
 
     if( option.nonRecursive ) args.push( '/nonrecursive' );
@@ -256,13 +265,12 @@ export class TortoiseSvnLauncher {
   async commit( path: string, option: TsvnCommitOption = {} ) {
     const args: string[] = [];
 
-    const pathfile = await this.writeTmpFile( path );
-    console.log( pathfile );
+    const pathfile = await this.writePathFile( path );
     args.push( `/pathfile:${pathfile}`);
 
     let logMsgFile: string;
     if( option.logMessage ) {
-      logMsgFile = await this.writeTmpFile( option.logMessage );
+      logMsgFile = await this.writeLogMsgFile( option.logMessage );
       args.push( `/logmsgfile:${logMsgFile}` );
     }
 
@@ -294,7 +302,7 @@ export class TortoiseSvnLauncher {
     
     let logMsgFile: string;
     if( option.logMessage ) {
-      logMsgFile = await this.writeTmpFile( option.logMessage );
+      logMsgFile = await this.writeLogMsgFile( option.logMessage );
       args.push( `/logmsgfile:${logMsgFile}` );
     }
 
