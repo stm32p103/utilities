@@ -1,6 +1,6 @@
 {
   "name": "@stm32p103/tmp-pool",
-  "version": "0.0.3",
+  "version": "0.0.4-beta",
   "description": "",
   "main": "dist/index.js",
   "files": [
@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "build:watch": "tsc -w -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "start:dev": "nodemon --config nodemon.json",
     "test": "jest --silent=false"
   },

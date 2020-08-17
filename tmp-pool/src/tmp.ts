@@ -44,6 +44,7 @@ export class TmpPool {
   constructor( option: TmpPoolOption = {} ) {
     this.option = Object.assign( {}, option );
     this.option.detachDescriptor = true;
+    this.option.discardDescriptor = true;
   }
 
   /** Remove currently unused temporary files. */
@@ -57,6 +58,18 @@ export class TmpPool {
     this.removeUnused();
     this.busy.forEach( file => file.remove() );
     this.busy = [];
+  }
+
+  async allocate( count: number ) {
+    const files = await Promise.all( new Array( count ).map( () => createTmpFile( this.option ) ) );
+    this.idle.push( ...files );
+  }
+
+  async allocateMinimum( minCount: number ) {
+    const diff = this.idle.length + this.busy.length - minCount;
+    if( diff > 0 ) {
+      await this.allocate( diff );
+    }
   }
 
   /**
