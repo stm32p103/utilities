@@ -1,0 +1,32 @@
+{
+  "name": "node-dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:watch": "tsc -w -p tsconfig.json",
+    "start:dev": "nodemon --config nodemon.json"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@stm32p103/scan-dir": "0.0.2",
+    "@types/jsdom": "^16.2.3",
+    "@types/lodash": "^4.14.157",
+    "common-util": "file:../common-dev",
+    "jsdom": "^16.3.0",
+    "lodash": "^4.17.19",
+    "node": "^13.6.0",
+    "nodemon": "^2.0.2",
+    "request": "^2.88.2",
+    "rxjs": "^6.5.5",
+    "ts-loader": "^8.0.2",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.4",
+    "webdav": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.6",
+    "@types/request": "^2.48.4"
+  }
+}
