@@ -1,4 +1,4 @@
-import { SvnClient, SvnGlobalOption } from './svn'
+import { SvnClient, SvnGlobalOption } from './cli'
 import { TortoiseSvnLauncher } from './proc'
 const sampleCredential = {
   username: 'cliuser',
@@ -12,8 +12,8 @@ const checkoutPath = 'K:/ws/svn/ch';
 const logMsg = `TEST-1 日本語でメッセージが書ける。
 改行もできる。`;
 
-const urlCopyFrom = 'http://localhost/repos/copy/1';
-const urlCopyTo = 'http://localhost/repos/copy/2';
+const urlCopyFrom = 'http://localhost/repos/copy/copy dir';
+const urlCopyTo = 'http://localhost/repos/copy/spaced copy dir';
 
 
 const mergePath = 'K:/ws/svn/checkout/package';
@@ -24,13 +24,13 @@ async function test() {
     let pid = 0;
     const launcher = new TortoiseSvnLauncher();
 
+    /*
     pid = await launcher.mergeRangeOfRevision( mergePath,urlMergeFrom );
     await launcher.waitUntilComplete( pid );
 
-    
     pid = await launcher.mergeDifferentTrees( mergePath, { url: urlCopyFrom }, { url: urlCopyTo } );
     await launcher.waitUntilComplete( pid );
-    /*
+
     pid = await launcher.log( url );
     await launcher.waitUntilComplete( pid );
     
@@ -49,10 +49,10 @@ async function test() {
     pid = await launcher.commit( checkoutPath, { logMessage: logMsg, bugIds: [ 1, 2, 3 ] } );
     await launcher.waitUntilComplete( pid );
 
-    pid = await launcher.copy( urlCopyFrom, urlCopyTo, { logMessage: logMsg, makeParents: true } );
-    await launcher.waitUntilComplete( pid );
     */
 
+   pid = await launcher.copy( urlCopyFrom, urlCopyTo, { logMessage: logMsg, makeParents: true } );
+   await launcher.waitUntilComplete( pid );
     /*
     let log = await client.info( 'K:/ws/svn/checkout/sample' );
     console.dir( log, { depth: null } );

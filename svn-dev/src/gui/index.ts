@@ -1,6 +1,5 @@
 // node
 import { spawn } from 'child_process';
-import { promises } from 'fs';
 
 // rxjs
 import { Subject } from 'rxjs';
@@ -8,7 +7,7 @@ import { take, filter } from 'rxjs/operators';
 
 // my lib
 import { TmpPool } from '@stm32p103/tmp-pool';
-
+import { TmpFiles } from './tmp';
 // ############################################################################
 type TsvnExitCode = {
   pid: number;
@@ -363,17 +362,17 @@ export class TortoiseSvnLauncher {
   }
 
   /**
-   * @param from コピー元の作業コピーまたはリポジトリURL
-   * @param to コピー先のURL。先頭に^を付けた場合、リポジトリルートからの相対URLとみなされる。
+   * @param fromPathOrUrl コピー元の作業コピーまたはリポジトリURL
+   * @param toUrl コピー先のURL。先頭に^を付けた場合、リポジトリルートからの相対URLとみなされる。
    * @param option svn copyのオプション。
    */
-  async copy( from: string, to: string, option: TsvnCopyOption = {} ) {
+  async copy( fromPathOrUrl: string, toUrl: string, option: TsvnCopyOption = {} ) {
     const tmp = new TmpFiles( this.tmpPool );
-    const args: string[] = [ `/url:${encodeURI(to)}` ];
+    const args: string[] = [ `/url:${encodeURI(toUrl)}` ];
 
     if( option.switchAfterCopy ) args.push( '/switchaftercopy' );
     if( option.makeParents ) args.push( '/makeparents' );
-    if( from ) args.push( `/pathfile:${ await tmp.create( from, pathEncoding ) }` );
+    if( fromPathOrUrl ) args.push( `/pathfile:${ await tmp.create( fromPathOrUrl, pathEncoding ) }` );
     if( option.logMessage ) args.push( `/logmsgfile:${ await tmp.create( option.logMessage, messageEncoding ) }` );
 
     // TortoiseProcを起動する。
@@ -390,23 +389,6 @@ export class TortoiseSvnLauncher {
    */
   get exitCode() {
     return this.statusSubject.asObservable();
-  }
-}
-
-
-
-class TmpFiles {
-  private paths: string[] = [];
-  constructor( private pool: TmpPool ) {}
-  async create( value: string, encoding: BufferEncoding ) {
-    const path = await this.pool.acquire();
-    this.paths.push( path );
-    await promises.writeFile( path, value, { encoding: encoding } );
-    return path;
-  }
-
-  dispose() {
-    this.paths.forEach( path => this.pool.release( path ) );
   }
 }
 
