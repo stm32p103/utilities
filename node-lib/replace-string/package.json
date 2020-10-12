@@ -1,0 +1,33 @@
+{
+  "name": "@stm32p103/replace-string",
+  "private": false,
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/utilities.git",
+    "directory": "node-lib/replace-string"
+  },
+  "keywords": [
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "jest --silent=false"
+  },
+  "author": "stm32p103",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.3",
+    "@types/node": "^14.0.0",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.1",
+    "typescript": "^3.0.0"
+  }
+}
