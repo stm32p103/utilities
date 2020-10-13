@@ -1,14 +1,23 @@
-const regexp = /\$\{([_a-zA-Z][_a-zA-Z0-9]*)\}/g;
+import { get } from 'lodash';
 
-export type KeyValue = { [ key: string ]: string };
+function replaceBase( template: string, regexp: RegExp, replace: ( path: string ) => string ) {
+  const substrings: string[] = [];
+  let lastIndex = 0;
 
-export function replaceString( template: string, kv: KeyValue ) {
-  let tmp = template;
   let res: RegExpExecArray;
   while( res = regexp.exec( template ) ) {
-    // res[0]: matched string
-    // res[1]: sub match
-    tmp = tmp.replace( res[ 0 ], kv[ res[ 1 ] ] );
+    const value = replace( res[1] );
+    // 置換しない文字列からエスケープ(\)を削除してから置換結果を連結し、substringにpush
+    substrings.push( template.substr( lastIndex, res.index - lastIndex ).replace( '\\', '' ) + value );
+    lastIndex = res.index + res[ 0 ].length;
   }
-  return tmp; 
+
+  // マッチしなかった残りを追加
+  substrings.push( template.substr( lastIndex, template.length - lastIndex ).replace( '\\', '' ) );
+  return substrings.join('');
+}
+
+const pathRegexp = /\$\{(([_a-zA-Z][_a-zA-Z0-9]*)(\.[_a-zA-Z][_a-zA-Z0-9]*)*)\}/g;
+export function replaceString( template: string, obj: Object ) {
+  return replaceBase( template, pathRegexp, path => get( obj, path ) );
 }

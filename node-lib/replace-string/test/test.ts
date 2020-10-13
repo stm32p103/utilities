@@ -1,16 +1,83 @@
 import { replaceString } from '../src';
 
-test('replace', async () => {
-  const data = {
-    name: 'A',
-    height: '10',
-    width: '20',
-    length: '30'
-  }
-  let template = '${name}: ${height}x${width}x${length}';
+const data = {
+  name: 'A',
+  dimension: {
+    height: 10,
+    width: 20,
+    length: 30  
+  },
+  weight: 100,
+  valid: true
+}
+
+test('replaceKey', async () => {
+  const template = '${name}: ${weight}kg';
+  const res = replaceString( template, data );
+  console.log( res );
+  
+  expect( res ).toEqual( 'A: 100kg' );
+} );
+
+test('replaceSubkey', async () => {
+  let template = '${name}: ${dimension.height}x${dimension.width}x${dimension.length}, valid: ${valid}';
 
   const res = replaceString( template, data );
   console.log( res );
   
-  expect( res ).toEqual( 'A: 10x20x30' );
+  expect( res ).toEqual( 'A: 10x20x30, valid: true' );
+} );
+
+test('missing', async () => {
+  let template = 'missing: ${invalid_data}';
+
+  const res = replaceString( template, data );
+  console.log( res );
+  
+  expect( res ).toEqual( 'missing: undefined' );
+} );
+
+test('object', async () => {
+  let template = 'object: ${dimension}';
+
+  const res = replaceString( template, data );
+  console.log( res );
+  
+  expect( res ).toEqual( 'object: [object Object]' );
+} );
+
+test('null', async () => {
+  let template = 'null: ${null}';
+
+  const res = replaceString( template, null );
+  console.log( res );
+  
+  expect( res ).toEqual( 'null: undefined' );
+} );
+
+test('undefined', async () => {
+  let template = 'undefined: ${undefined}';
+
+  const res = replaceString( template, undefined );
+  console.log( res );
+  
+  expect( res ).toEqual( 'undefined: undefined' );
+} );
+
+test('string', async () => {
+  let template = 'string: ${string}';
+
+  const res = replaceString( template, 'test' );
+  console.log( res );
+  
+  expect( res ).toEqual( 'string: undefined' );
+} );
+
+test('number', async () => {
+  let template = 'number: ${number}';
+
+  const res = replaceString( template, 'test' );
+  console.log( res );
+  
+  expect( res ).toEqual( 'number: undefined' );
 } );

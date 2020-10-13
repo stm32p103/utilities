@@ -12,18 +12,20 @@
     "url": "https://github.com/stm32p103/utilities.git",
     "directory": "node-lib/replace-string"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "start": "nodemon",
+    "build": "tsc -p tsconfig.json --watch",
     "test": "jest --silent=false"
   },
   "author": "stm32p103",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.20",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.162",
     "@types/jest": "^26.0.3",
     "@types/node": "^14.0.0",
     "jest": "^26.1.0",
