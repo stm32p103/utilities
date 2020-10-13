@@ -6,6 +6,8 @@ function replaceBase( template: string, regexp: RegExp, replace: ( path: string 
 
   let res: RegExpExecArray;
   while( res = regexp.exec( template ) ) {
+    // res[0]: もっとも外側でマッチした文字列。
+    // res[1]: 内側でマッチした文字列。文字列置換に使う。
     const value = replace( res[1] );
     // 置換しない文字列からエスケープ(\)を削除してから置換結果を連結し、substringにpush
     substrings.push( template.substr( lastIndex, res.index - lastIndex ).replace( '\\', '' ) + value );
@@ -17,7 +19,8 @@ function replaceBase( template: string, regexp: RegExp, replace: ( path: string 
   return substrings.join('');
 }
 
-const pathRegexp = /\$\{(([_a-zA-Z][_a-zA-Z0-9]*)(\.[_a-zA-Z][_a-zA-Z0-9]*)*)\}/g;
+const pathRegexp = /(?<!\\)\$\{([^\$\{\}]+)\}/g;
 export function replaceString( template: string, obj: Object ) {
+  // lodash に任せて、 . や [] でオブジェクトの値を置換
   return replaceBase( template, pathRegexp, path => get( obj, path ) );
 }

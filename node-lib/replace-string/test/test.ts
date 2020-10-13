@@ -5,8 +5,9 @@ const data = {
   dimension: {
     height: 10,
     width: 20,
-    length: 30  
+    length: 30
   },
+  array: [ 1, 2, 3 ],
   weight: 100,
   valid: true
 }
@@ -19,8 +20,25 @@ test('replaceKey', async () => {
   expect( res ).toEqual( 'A: 100kg' );
 } );
 
+test('array', async () => {
+  const template = '${array[0]}, ${array[1]}, ${array[2]}';
+  const res = replaceString( template, data );
+  console.log( res );
+  
+  expect( res ).toEqual( '1, 2, 3' );
+} );
+
+test('escape', async () => {
+  const template = '\\${name}';
+  console.log( template);
+  const res = replaceString( template, data );
+  console.log( res );
+  
+  expect( res ).toEqual( '${name}' );
+} );
+
 test('replaceSubkey', async () => {
-  let template = '${name}: ${dimension.height}x${dimension.width}x${dimension.length}, valid: ${valid}';
+  let template = '${name}: ${dimension.height}x${dimension.width}x${dimension[length]}, valid: ${valid}';
 
   const res = replaceString( template, data );
   console.log( res );
