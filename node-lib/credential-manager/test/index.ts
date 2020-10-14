@@ -19,6 +19,9 @@ test('basic', async () => {
   const after = await manager.exists( username );
   expect( after ).toBeTruthy();
 
+  const pass = await manager.getPassword( username );
+  expect( pass ).toEqual( password );
+
   const users = await manager.getAllUsers();
   expect( users ).toEqual( expect.arrayContaining( [ username ] ) );
 

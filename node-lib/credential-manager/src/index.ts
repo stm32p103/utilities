@@ -24,8 +24,12 @@ export class CredentialManager {
     return credentials.map( cred => cred.account );
   }
 
+  async getPassword( user: string ) {
+    return await getPassword( this.serviceId, user );
+  }
+
   async check( user: string, password: string ) {
-    const correctPassword = await getPassword( this.serviceId, user );
+    const correctPassword = await this.getPassword( user );
     return ( correctPassword == password );
   }
 
