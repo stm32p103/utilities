@@ -1,6 +1,6 @@
 {
   "name": "@stm32p103/credential-manager",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "private": false,
   "main": "dist/index.js",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/stm32p103/utilities.git",
-    "directory": "node-lib/credential-manger"
+    "directory": "node-lib/credential-manager"
   },
   "keywords": [],
   "scripts": {
