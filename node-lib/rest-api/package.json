@@ -1,0 +1,36 @@
+{
+  "name": "@stm32p103/basic-auth-rest-api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stm32p103/utilities.git",
+    "directory": "node-lib/basic-auth-rest-api"
+  },
+  "keywords": [
+    "REST API"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "jest --silent=false"
+  },
+  "author": "stm32p103",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "axios-cookiejar-support": "^1.0.0",
+    "tough-cookie": "^4.0.0",
+    "tslib": "^2.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^3.0.0",
+    "@types/jest": "^26.0.3",
+    "@types/node": "^14.0.0",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.1"
+  }
+}
