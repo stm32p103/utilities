@@ -1,7 +1,8 @@
 {
   "name": "@stm32p103/credential-manger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
+  "private": false,
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -11,9 +12,7 @@
     "url": "https://github.com/stm32p103/utilities.git",
     "directory": "node-lib/credential-manger"
   },
-  "keywords": [
-    "REST API"
-  ],
+  "keywords": [],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "jest --silent=false"
