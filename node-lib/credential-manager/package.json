@@ -1,6 +1,6 @@
 {
-  "name": "@stm32p103/credential-manger",
-  "version": "0.0.2",
+  "name": "@stm32p103/credential-manager",
+  "version": "0.0.3",
   "description": "",
   "private": false,
   "main": "dist/index.js",
